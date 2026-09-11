@@ -1,652 +1,1190 @@
 import streamlit as st
-import streamlit.components.v1 as components
 
+# Configure Streamlit page layout and metadata
 st.set_page_config(
-    page_title="The Great Office Chaos",
-    page_icon="🕵️",
+    page_title="The Great Indian Office Chaos | Germane Media LLC",
+    page_icon="🇮🇳",
     layout="wide",
-    initial_sidebar_state="collapsed",
+    initial_sidebar_state="collapsed"
 )
 
-GAME_HTML = r"""
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>The Great Office Chaos</title>
+# Hide default Streamlit padding and header elements for a seamless game show UI
+st.markdown("""
 <style>
-:root{
-  --bg:#080b12;
-  --panel:#111722;
-  --panel2:#171f2d;
-  --yellow:#ffd43b;
-  --orange:#ff8a3d;
-  --red:#ff4d5a;
-  --blue:#4da3ff;
-  --green:#4ee19b;
-  --white:#f7f9fc;
-  --muted:#aeb8c8;
-  --border:#2a3445;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;background:
-  radial-gradient(circle at 10% 0%,rgba(255,212,59,.12),transparent 30%),
-  radial-gradient(circle at 90% 20%,rgba(77,163,255,.10),transparent 28%),
-  var(--bg);
-  color:var(--white);
-  font-family:Arial,Helvetica,sans-serif;
-}
-button{font:inherit}
-#app{max-width:1150px;margin:auto;padding:22px}
-.topbar{
-  display:flex;justify-content:space-between;align-items:center;gap:15px;
-  padding:12px 16px;border:1px solid var(--border);background:rgba(17,23,34,.92);
-  border-radius:18px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(10px)
-}
-.brand{font-weight:900;letter-spacing:.5px}
-.brand span{color:var(--yellow)}
-.stats{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
-.pill{border:1px solid var(--border);background:#0d131d;border-radius:999px;padding:8px 13px;font-size:14px}
-#timer{font-weight:900;color:var(--yellow);min-width:90px;text-align:center}
-#soundBtn{cursor:pointer}
-.hero{text-align:center;padding:45px 15px 28px}
-.kicker{color:var(--yellow);font-weight:900;letter-spacing:3px;font-size:13px}
-h1{font-size:clamp(40px,7vw,78px);line-height:.95;margin:13px 0}
-.hero h1 span{color:var(--orange)}
-.subtitle{max-width:720px;margin:0 auto;color:var(--muted);font-size:18px;line-height:1.5}
-.cta{
-  margin-top:28px;background:var(--yellow);color:#111;border:0;border-radius:14px;
-  padding:15px 25px;font-weight:900;cursor:pointer;box-shadow:0 8px 25px rgba(255,212,59,.16)
-}
-.cta:hover{transform:translateY(-1px)}
-.card{
-  background:linear-gradient(145deg,var(--panel),#0e141e);
-  border:1px solid var(--border);border-radius:22px;padding:25px;
-  box-shadow:0 20px 60px rgba(0,0,0,.18)
-}
-.level-head{display:flex;justify-content:space-between;gap:15px;align-items:flex-start}
-.level-number{color:var(--yellow);font-weight:900;letter-spacing:1px}
-h2{font-size:34px;margin:7px 0 8px}
-.instruction{color:var(--muted);font-size:16px;line-height:1.5}
-.progress{height:9px;background:#202938;border-radius:99px;overflow:hidden;margin:18px 0 25px}
-.progress div{height:100%;background:linear-gradient(90deg,var(--yellow),var(--orange));width:10%;transition:width .4s}
-.question{font-size:21px;font-weight:800;margin:22px 0}
-.options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
-.option{
-  min-height:64px;background:var(--panel2);color:var(--white);border:1px solid var(--border);
-  border-radius:15px;padding:14px 16px;text-align:left;cursor:pointer;transition:.15s;
-}
-.option:hover{border-color:var(--yellow);transform:translateY(-2px)}
-.option.correct{border-color:var(--green);background:rgba(78,225,155,.12)}
-.option.wrong{border-color:var(--red);background:rgba(255,77,90,.12);animation:shake .25s}
-@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.feedback{
-  margin-top:17px;padding:15px 17px;border-radius:14px;background:#0c121c;border:1px solid var(--border);
-  min-height:52px;font-weight:700
-}
-.feedback.good{border-color:rgba(78,225,155,.5);color:var(--green)}
-.feedback.bad{border-color:rgba(255,77,90,.5);color:#ff8f98}
-.next{
-  margin-top:18px;background:var(--blue);color:white;border:0;border-radius:13px;padding:13px 20px;
-  font-weight:900;cursor:pointer;display:none
-}
-.visual{
-  border:1px solid var(--border);border-radius:18px;background:#0b1018;
-  padding:25px;margin:15px 0 20px;min-height:220px;display:flex;align-items:center;justify-content:center
-}
-.desk{display:grid;grid-template-columns:repeat(5,1fr);gap:15px;width:min(800px,100%)}
-.obj{
-  background:#171f2d;border:2px solid #2b3648;border-radius:17px;padding:20px 10px;
-  text-align:center;font-size:46px;cursor:pointer;transition:.15s
-}
-.obj span{display:block;font-size:13px;color:var(--muted);margin-top:8px}
-.obj:hover{border-color:var(--yellow);transform:scale(1.03)}
-.soundbox{text-align:center}
-.sound-icon{font-size:80px;margin:5px}
-.sound-btn{
-  background:#202a3a;border:1px solid #354157;color:white;border-radius:50%;
-  width:90px;height:90px;font-size:35px;cursor:pointer
-}
-.codebox{display:flex;gap:9px;justify-content:center;margin:20px 0}
-.codebox input{
-  width:60px;height:70px;text-align:center;font-size:30px;font-weight:900;
-  color:white;background:#0a1018;border:2px solid #344055;border-radius:12px
-}
-.code-hint{text-align:center;color:var(--muted)}
-.puzzle{
-  display:grid;grid-template-columns:repeat(3,92px);grid-template-rows:repeat(3,92px);
-  gap:6px;justify-content:center;margin:12px auto 22px
-}
-.tile{
-  background:#1d2736;border:2px solid #44516a;border-radius:10px;display:flex;align-items:center;
-  justify-content:center;font-size:42px;cursor:pointer;user-select:none;position:relative
-}
-.tile.selected{border-color:var(--yellow);box-shadow:0 0 0 3px rgba(255,212,59,.16)}
-.tile small{position:absolute;top:4px;left:6px;font-size:10px;color:#728098}
-.target{
-  text-align:center;color:var(--muted);font-size:13px;margin-bottom:10px
-}
-.diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}
-.scene{
-  background:linear-gradient(145deg,#182233,#101721);border:1px solid var(--border);
-  border-radius:16px;padding:18px;min-height:260px
-}
-.scene h3{margin-top:0;color:var(--yellow)}
-.scene-items{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
-.scene-item{background:#0b111b;border:1px solid #2d394c;border-radius:12px;padding:14px;text-align:center;font-size:30px}
-.whatsapp{max-width:650px;margin:auto;background:#101923;border-radius:18px;overflow:hidden;border:1px solid var(--border)}
-.wa-head{background:#172433;padding:15px;font-weight:900}
-.msg{padding:11px 14px;margin:9px 12px;border-radius:13px;max-width:80%;line-height:1.4}
-.msg.left{background:#202b38}
-.msg.right{background:#264d42;margin-left:auto}
-.emoji-big{text-align:center;font-size:70px;padding:20px}
-.final{
-  text-align:center;padding:25px 10px
-}
-.final h2{font-size:45px}
-.final-options{max-width:700px;margin:25px auto;display:grid;grid-template-columns:1fr 1fr;gap:13px}
-.final .option{text-align:center;min-height:70px;font-size:17px}
-.overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.78);display:none;align-items:center;justify-content:center;
-  z-index:100;padding:20px
-}
-.popup{
-  width:min(620px,100%);background:#111722;border:2px solid var(--yellow);border-radius:24px;
-  padding:30px;text-align:center;box-shadow:0 30px 100px rgba(0,0,0,.5)
-}
-.popup .big{font-size:68px}
-.popup h3{font-size:30px;margin:8px 0}
-.popup p{color:var(--muted);line-height:1.5}
-.confetti{position:fixed;inset:0;pointer-events:none;z-index:110;display:none}
-.confetti i{position:absolute;width:9px;height:18px;animation:fall 2.2s linear forwards}
-@keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:.9}}
-@media(max-width:700px){
-  #app{padding:10px}.topbar{position:relative}.options,.final-options,.diff-grid{grid-template-columns:1fr}
-  .desk{grid-template-columns:repeat(2,1fr)}.puzzle{grid-template-columns:repeat(3,76px);grid-template-rows:repeat(3,76px)}
-  .tile{font-size:34px}.hero{padding-top:28px}.hero h1{font-size:48px}.level-head{display:block}
-}
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
+    .block-container {
+        padding-top: 0rem !important;
+        padding-bottom: 0rem !important;
+        padding-left: 0rem !important;
+        padding-right: 0rem !important;
+        max-width: 100% !important;
+    }
+    iframe {
+        border: none !important;
+    }
 </style>
+""", unsafe_allow_html=True)
+
+# Full Interactive Browser Game Engine (HTML5, CSS3, JavaScript Web Audio API)
+HTML_GAME = """
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Great Indian Office Chaos</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #0f0c20;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            overflow-x: hidden;
+            padding: 10px;
+        }
+
+        /* GAME SHOW CONTAINER */
+        #game-container {
+            width: 100%;
+            max-width: 1000px;
+            background: #181335;
+            border: 4px solid #ffd700;
+            border-radius: 20px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3), inset 0 0 15px rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            position: relative;
+            min-height: 820px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* HEADER HUD */
+        .hud-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 2px solid #ff007f;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hud-title {
+            font-size: 14px;
+            font-weight: 900;
+            color: #ff9900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hud-badges {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .badge {
+            background: #281e51;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 14px;
+            border: 1px solid #00f2fe;
+            box-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+        }
+
+        .badge-timer { color: #ff3366; border-color: #ff3366; }
+        .badge-score { color: #00ff88; border-color: #00ff88; }
+        .badge-level { color: #ffd700; border-color: #ffd700; }
+
+        /* CHAOS METER */
+        .chaos-container {
+            width: 100%;
+            background: #000;
+            height: 16px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #ff3366;
+            margin-bottom: 15px;
+            position: relative;
+        }
+
+        .chaos-bar {
+            height: 100%;
+            width: 10%;
+            background: linear-gradient(90deg, #00ff88, #ffd700, #ff007f);
+            transition: width 0.5s ease;
+        }
+
+        .chaos-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 10px;
+            font-weight: 900;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* SOUND & HINT CONTROL BUTTONS */
+        .top-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-ctrl {
+            background: #ff007f;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.1s, background 0.2s;
+        }
+
+        .btn-ctrl:hover { transform: scale(1.05); background: #e0006c; }
+
+        /* LEVEL STAGE CANVAS / CONTENT AREA */
+        .stage-area {
+            flex-grow: 1;
+            background: #211a45;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px dashed #00f2fe;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        /* TYPOGRAPHY & BUTTONS */
+        h1 { font-size: 28px; color: #ffd700; text-shadow: 2px 2px 0 #ff007f; margin-bottom: 10px; }
+        h2 { font-size: 20px; color: #00f2fe; margin-bottom: 15px; }
+        p { font-size: 14px; color: #e0e0e0; margin-bottom: 15px; line-height: 1.5; }
+
+        .btn-main {
+            background: linear-gradient(135deg, #ff7b00, #ff0055);
+            color: white;
+            font-size: 18px;
+            font-weight: 900;
+            padding: 14px 28px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 0 #990033, 0 10px 20px rgba(255, 0, 85, 0.4);
+            transition: all 0.15s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px;
+        }
+
+        .btn-main:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #990033, 0 4px 10px rgba(255, 0, 85, 0.4);
+        }
+
+        .option-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 700px;
+            margin-top: 15px;
+        }
+
+        .btn-option {
+            background: #2d245c;
+            border: 2px solid #00f2fe;
+            color: white;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .btn-option:hover {
+            background: #00f2fe;
+            color: #000;
+            transform: translateY(-2px);
+        }
+
+        /* TRAFFIC SIMULATOR CANVAS (LEVEL 1) */
+        .traffic-box {
+            position: relative;
+            width: 100%;
+            max-width: 750px;
+            height: 380px;
+            background: linear-gradient(180deg, #3a2e6e 0%, #1a1533 100%);
+            border-radius: 12px;
+            border: 3px solid #ffd700;
+            overflow: hidden;
+            margin-bottom: 15px;
+        }
+
+        .traffic-target {
+            position: absolute;
+            cursor: pointer;
+            font-size: 32px;
+            transition: transform 0.2s;
+            padding: 8px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50%;
+            border: 2px solid #ffd700;
+        }
+
+        .traffic-target:hover { transform: scale(1.3) rotate(5deg); }
+        .traffic-target.found { opacity: 0.3; pointer-events: none; border-color: #00ff88; }
+
+        /* PUZZLE GRID (LEVEL 2) */
+        .puzzle-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 90px);
+            grid-template-rows: repeat(3, 90px);
+            gap: 6px;
+            margin: 15px auto;
+        }
+
+        .puzzle-tile {
+            background: #3b2d75;
+            border: 2px solid #ffd700;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 900;
+            cursor: pointer;
+            color: #fff;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .puzzle-tile.selected {
+            background: #ff007f;
+            transform: scale(1.1);
+            border-color: #00ff88;
+        }
+
+        /* KEYPAD (LEVEL 4) */
+        .upi-keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+            margin: 15px auto;
+        }
+
+        .key-btn {
+            background: #2e235e;
+            border: 2px solid #00f2fe;
+            color: white;
+            font-size: 20px;
+            font-weight: 900;
+            height: 55px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+
+        .key-btn:hover { background: #00f2fe; color: #000; }
+
+        /* RECURRING CHARACTER POPUP MODAL */
+        .char-modal {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 12, 32, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+            z-index: 100;
+            animation: popIn 0.3s ease;
+        }
+
+        @keyframes popIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .char-avatar {
+            font-size: 70px;
+            margin-bottom: 10px;
+            filter: drop-shadow(0 0 10px #ffd700);
+        }
+
+        .char-name {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ff007f;
+            margin-bottom: 5px;
+        }
+
+        .char-quote {
+            font-style: italic;
+            font-size: 16px;
+            color: #ffd700;
+            max-width: 500px;
+            margin-bottom: 20px;
+            background: rgba(255,255,255,0.05);
+            padding: 12px;
+            border-radius: 10px;
+            border-left: 4px solid #ff007f;
+        }
+
+        /* LEVEL TRACKER FOOTER */
+        .level-tracker {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .dot {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            background: #281e51;
+            border: 1px solid #55418a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            color: #888;
+        }
+
+        .dot.active { background: #ff007f; color: #fff; border-color: #ffd700; box-shadow: 0 0 8px #ff007f; }
+        .dot.done { background: #00ff88; color: #000; border-color: #00ff88; }
+
+        /* WARNING OVERLAY */
+        .alert-banner {
+            background: #ff0033;
+            color: white;
+            font-weight: 900;
+            padding: 6px;
+            font-size: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        /* CONFETTI ANIMATION */
+        .confetti-particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #ffd700;
+            top: -10px;
+            animation: fall 2.5s infinite linear;
+        }
+
+        @keyframes fall {
+            to { transform: translateY(800px) rotate(360deg); }
+        }
+    </style>
 </head>
 <body>
-<div id="app">
-  <div class="topbar">
-    <div class="brand">GERMANE MEDIA <span>• OFFICE CHAOS</span></div>
-    <div class="stats">
-      <div class="pill">Level <b id="levelStat">0/10</b></div>
-      <div class="pill">Score <b id="score">0</b></div>
-      <div class="pill" id="timer">25:00</div>
-      <button class="pill" id="soundBtn" onclick="toggleSound()">🔊 Sound ON</button>
-    </div>
-  </div>
 
-  <section id="home" class="hero">
-    <div class="kicker">GERMANE MEDIA LLC PRESENTS</div>
-    <h1>THE GREAT<br><span>OFFICE CHAOS</span></h1>
-    <p class="subtitle">
-      Someone has created complete chaos in the office. Your team has 10 easy challenges
-      to solve it. Chai, WhatsApp, puzzles, codes, objects and a little bit of madness.
-    </p>
-    <button class="cta" onclick="startGame()">🚨 START THE CHAOS</button>
-  </section>
-
-  <section id="game" style="display:none">
-    <div class="card">
-      <div class="level-head">
+<div id="game-container">
+    <!-- TOP HUD -->
+    <div class="hud-header">
         <div>
-          <div class="level-number" id="levelKicker">LEVEL 1</div>
-          <h2 id="title"></h2>
-          <div class="instruction" id="instruction"></div>
+            <div class="hud-title">🇮🇳 GERMANE MEDIA LLC PRESENTS</div>
+            <div style="font-size:12px; font-weight:700; color:#fff;" id="display-team">TEAM: READY TO SURVIVE</div>
         </div>
-      </div>
-      <div class="progress"><div id="progressBar"></div></div>
-      <div id="content"></div>
-      <div id="feedback" class="feedback"></div>
-      <button id="nextBtn" class="next" onclick="nextLevel()">NEXT CHALLENGE →</button>
+        <div class="hud-badges">
+            <div class="badge badge-timer" id="timer-display">⏱️ 30:00</div>
+            <div class="badge badge-score" id="score-display">SCORE: 0000</div>
+            <div class="badge badge-level" id="level-display">LEVEL: 0 / 10</div>
+        </div>
+        <div class="top-controls">
+            <button class="btn-ctrl" onclick="toggleSound()" id="sound-btn">🔊 SOUND ON</button>
+            <button class="btn-ctrl" onclick="useHint()" id="hint-btn">💡 HINT (3)</button>
+        </div>
     </div>
-  </section>
-</div>
 
-<div class="overlay" id="popupOverlay">
-  <div class="popup">
-    <div class="big" id="popupEmoji">🎉</div>
-    <h3 id="popupTitle">Correct!</h3>
-    <p id="popupText"></p>
-    <button class="cta" onclick="closePopup()">Continue</button>
-  </div>
-</div>
+    <!-- CHAOS METER -->
+    <div class="chaos-container">
+        <div class="chaos-bar" id="chaos-bar"></div>
+        <div class="chaos-text" id="chaos-text">🔥 CHAOS METER: 10%</div>
+    </div>
 
-<div class="confetti" id="confetti"></div>
+    <div id="alert-zone"></div>
+
+    <!-- MAIN STAGE -->
+    <div class="stage-area" id="stage">
+        <!-- Dynamic content rendered by JS -->
+    </div>
+
+    <!-- LEVEL TRACKER -->
+    <div class="level-tracker" id="level-tracker">
+        <!-- Rendered by JS -->
+    </div>
+</div>
 
 <script>
-let level=0, score=0, timeLeft=25*60, timerId=null, soundOn=true;
-let answered=false, selectedTile=null, puzzleState=[], finalMistakes=0;
+    // GAME STATE VARIABLES
+    let score = 0;
+    let currentLevel = 0;
+    let timerSeconds = 1800; // 30 mins
+    let timerInterval = null;
+    let soundEnabled = true;
+    let hintsLeft = 3;
+    let teamName = "THE JUGAADUS";
+    let chaosLevel = 10;
+    let tarangWrongAttempts = 0;
 
-const levels = [
-  {
-    title:"Find What Is Missing",
-    instruction:"Look at the very normal Indian office desk. One important thing is missing. Click the missing object.",
-    points:100
-  },
-  {
-    title:"Guess That Sound",
-    instruction:"Press PLAY, listen carefully, and choose the sound. It is something you hear in normal Indian life.",
-    points:100
-  },
-  {
-    title:"Crack the Chai Code",
-    instruction:"Each emoji has a number. Add them from left to right and enter the 4-digit code.",
-    points:125
-  },
-  {
-    title:"Assemble the Chai Break",
-    instruction:"Click two tiles to swap them. Put the 9 pieces in the correct order. No need to rush.",
-    points:150
-  },
-  {
-    title:"Who Is Avoiding The Meeting?",
-    instruction:"Read the WhatsApp chat. Choose the person who is obviously trying to escape the meeting.",
-    points:100
-  },
-  {
-    title:"Spot The Difference",
-    instruction:"Compare the two office scenes. Click the ONE item that is different.",
-    points:125
-  },
-  {
-    title:"What Is This?",
-    instruction:"The picture is zoomed in. Identify the everyday Indian object.",
-    points:100
-  },
-  {
-    title:"Decode The Emojis",
-    instruction:"What very familiar office situation do these emojis describe?",
-    points:100
-  },
-  {
-    title:"The Indian Office Code",
-    instruction:"Count the letters in each word. CHAI, CUP, TEA, PHONE. Put the four numbers together.",
-    points:150
-  },
-  {
-    title:"The Most Important Question",
-    instruction:"This is the final question. Choose wisely. HR is watching. 👀",
-    points:200
-  }
-];
+    // WEB AUDIO SYNTHESIZER
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
 
-function startGame(){
-  document.getElementById("home").style.display="none";
-  document.getElementById("game").style.display="block";
-  level=0;score=0;timeLeft=25*60;finalMistakes=0;
-  document.getElementById("score").textContent=score;
-  if(timerId) clearInterval(timerId);
-  timerId=setInterval(tick,1000);
-  renderLevel();
-  beep("start");
-}
+    function initAudio() {
+        if (!audioCtx) audioCtx = new AudioContext();
+    }
 
-function tick(){
-  if(timeLeft<=0){
-    clearInterval(timerId);
-    timeLeft=0;
-    updateTimer();
-    showPopup("⏰","TIME'S UP!","The clock has stopped, but you can still finish the final question.");
-    return;
-  }
-  timeLeft--;
-  updateTimer();
-}
-function updateTimer(){
-  let m=Math.floor(timeLeft/60),s=timeLeft%60;
-  document.getElementById("timer").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
-  if(timeLeft<=300) document.getElementById("timer").style.color="#ff8f98";
-  else document.getElementById("timer").style.color="var(--yellow)";
-}
+    function playSound(type) {
+        if (!soundEnabled) return;
+        initAudio();
+        const now = audioCtx.currentTime;
 
-function renderLevel(){
-  answered=false;selectedTile=null;
-  const L=levels[level];
-  document.getElementById("levelKicker").textContent="LEVEL "+(level+1);
-  document.getElementById("levelStat").textContent=(level+1)+"/10";
-  document.getElementById("title").textContent=L.title;
-  document.getElementById("instruction").textContent=L.instruction;
-  document.getElementById("progressBar").style.width=((level+1)*10)+"%";
-  document.getElementById("feedback").className="feedback";
-  document.getElementById("feedback").textContent="";
-  document.getElementById("nextBtn").style.display="none";
+        if (type === 'ting') {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(880, now);
+            osc.frequency.exponentialRampToValueAtTime(1760, now + 0.2);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.2);
+        } else if (type === 'beep') {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(150, now);
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.3);
+        } else if (type === 'pop') {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(300, now);
+            osc.frequency.exponentialRampToValueAtTime(900, now + 0.1);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.1);
+        } else if (type === 'cheer') {
+            [523.25, 659.25, 783.99, 1046.50].forEach((freq, idx) => {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+                gain.gain.setValueAtTime(0.3, now + idx * 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + idx * 0.08 + 0.4);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(now + idx * 0.08); osc.stop(now + idx * 0.08 + 0.4);
+            });
+        } else if (type === 'scratch') {
+            let osc = audioCtx.createOscillator();
+            let gain = audioCtx.createGain();
+            osc.type = 'sawtooth';
+            osc.frequency.setValueAtTime(600, now);
+            osc.frequency.linearRampToValueAtTime(80, now + 0.25);
+            gain.gain.setValueAtTime(0.4, now);
+            gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+            osc.connect(gain); gain.connect(audioCtx.destination);
+            osc.start(now); osc.stop(now + 0.25);
+        }
+    }
 
-  const c=document.getElementById("content");
-  if(level===0) renderMissing(c);
-  if(level===1) renderSound(c);
-  if(level===2) renderChaiCode(c);
-  if(level===3) renderPuzzle(c);
-  if(level===4) renderWhatsapp(c);
-  if(level===5) renderDifference(c);
-  if(level===6) renderObject(c);
-  if(level===7) renderEmoji(c);
-  if(level===8) renderOfficeCode(c);
-  if(level===9) renderFinal(c);
-}
+    function toggleSound() {
+        soundEnabled = !soundEnabled;
+        document.getElementById('sound-btn').innerText = soundEnabled ? "🔊 SOUND ON" : "🔇 SOUND OFF";
+    }
 
-function correct(message){
-  if(answered) return;
-  answered=true;
-  score += levels[level].points;
-  document.getElementById("score").textContent=score;
-  const f=document.getElementById("feedback");
-  f.className="feedback good";
-  f.textContent="✅ Correct! "+message+"  +"+levels[level].points+" points";
-  document.getElementById("nextBtn").style.display="inline-block";
-  beep("correct");
-}
-function wrong(message="Not this one. Try again!"){
-  const f=document.getElementById("feedback");
-  f.className="feedback bad";
-  f.textContent="❌ "+message;
-  beep("wrong");
-}
+    function updateHUD() {
+        document.getElementById('score-display').innerText = `SCORE: ${String(score).padStart(4, '0')}`;
+        document.getElementById('level-display').innerText = `LEVEL: ${currentLevel} / 10`;
+        
+        // Update Chaos Meter
+        chaosLevel = Math.min(100, Math.max(10, currentLevel * 10));
+        document.getElementById('chaos-bar').style.width = `${chaosLevel}%`;
+        document.getElementById('chaos-text').innerText = `🔥 CHAOS METER: ${chaosLevel}%`;
 
-function renderMissing(c){
-  c.innerHTML=`
-    <div class="visual">
-      <div class="desk">
-        <div class="obj" onclick="correct('The chai is always important.')">💻<span>Laptop</span></div>
-        <div class="obj" onclick="correct('The chai is always important.')">🖱️<span>Mouse</span></div>
-        <div class="obj" onclick="correct('The chai is always important.')">📒<span>Notebook</span></div>
-        <div class="obj" onclick="correct('The chai is always important.')">🔌<span>Charger</span></div>
-        <div class="obj" onclick="wrong('Nope. Look again. What keeps Indian offices alive?')">🍪<span>Biscuit</span></div>
-      </div>
-    </div>
-    <div class="question">Which important office item is missing?</div>
-    <div class="options">
-      <button class="option" onclick="correct('The chai is always important.')">☕ Chai</button>
-      <button class="option" onclick="wrong()">🔋 Power bank</button>
-      <button class="option" onclick="wrong()">🎧 Headphones</button>
-      <button class="option" onclick="wrong()">🧴 Sanitizer</button>
-    </div>`;
-}
+        // Update dots
+        const tracker = document.getElementById('level-tracker');
+        tracker.innerHTML = '';
+        for (let i = 1; i <= 10; i++) {
+            let dot = document.createElement('div');
+            dot.className = `dot ${i === currentLevel ? 'active' : ''} ${i < currentLevel ? 'done' : ''}`;
+            dot.innerText = i < currentLevel ? '✓' : i;
+            tracker.appendChild(dot);
+        }
+    }
 
-function renderSound(c){
-  c.innerHTML=`
-    <div class="visual soundbox">
-      <div class="sound-icon">🔊</div>
-      <button class="sound-btn" onclick="playIndianSound()">▶️</button>
-      <div style="margin-top:12px;color:var(--muted)">Press play. You can listen more than once.</div>
-    </div>
-    <div class="question">What sound did you hear?</div>
-    <div class="options">
-      <button class="option" onclick="correct('Exactly. Chai time has a sound.')">☕ Pressure cooker whistle</button>
-      <button class="option" onclick="wrong()">🖨️ Office printer</button>
-      <button class="option" onclick="wrong()">🚗 Car horn</button>
-      <button class="option" onclick="wrong()">📞 Phone ringing</button>
-    </div>`;
-}
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (timerSeconds > 0) {
+                timerSeconds--;
+                let mins = Math.floor(timerSeconds / 60);
+                let secs = timerSeconds % 60;
+                document.getElementById('timer-display').innerText = `⏱️ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
+                
+                let alertZone = document.getElementById('alert-zone');
+                if (timerSeconds === 300) {
+                    alertZone.innerHTML = '<div class="alert-banner">⚠️ CHAOS LEVEL: HIGH! 5 MINUTES REMAINING!</div>';
+                    playSound('beep');
+                } else if (timerSeconds === 60) {
+                    alertZone.innerHTML = '<div class="alert-banner">🚨 LAST MINUTE! FINISH THE CHAOS!</div>';
+                    playSound('beep');
+                } else if (timerSeconds === 0) {
+                    alertZone.innerHTML = '<div class="alert-banner">⏰ TIME\'S UP! Complete your final answer!</div>';
+                }
+            }
+        }, 1000);
+    }
 
-function playIndianSound(){
-  if(!soundOn) return;
-  const ctx=new (window.AudioContext||window.webkitAudioContext)();
-  let o=ctx.createOscillator(),g=ctx.createGain();
-  o.type="sine";o.frequency.setValueAtTime(700,ctx.currentTime);
-  o.frequency.exponentialRampToValueAtTime(2100,ctx.currentTime+.9);
-  g.gain.setValueAtTime(.001,ctx.currentTime);
-  g.gain.exponentialRampToValueAtTime(.22,ctx.currentTime+.08);
-  g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+1.05);
-  o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+1.1);
-}
+    function useHint() {
+        if (hintsLeft <= 0) {
+            alert("No hints remaining!");
+            return;
+        }
+        hintsLeft--;
+        score = Math.max(0, score - 50);
+        document.getElementById('hint-btn').innerText = `💡 HINT (${hintsLeft})`;
+        updateHUD();
 
-function renderChaiCode(c){
-  c.innerHTML=`
-    <div class="visual" style="display:block;text-align:center">
-      <div style="font-size:55px;letter-spacing:12px">☕ 🍪 🥛 🍩</div>
-      <div style="font-size:20px;margin-top:18px">2 &nbsp;&nbsp; 4 &nbsp;&nbsp; 1 &nbsp;&nbsp; 7</div>
-      <div class="code-hint">Enter the numbers from left to right.</div>
-      <div class="codebox">
-        <input maxlength="1" inputmode="numeric" id="c1">
-        <input maxlength="1" inputmode="numeric" id="c2">
-        <input maxlength="1" inputmode="numeric" id="c3">
-        <input maxlength="1" inputmode="numeric" id="c4">
-      </div>
-      <button class="cta" onclick="checkCode()">🔓 UNLOCK</button>
-    </div>
-    <div class="question">What is the 4-digit code?</div>`;
-}
-function checkCode(){
-  const code=["c1","c2","c3","c4"].map(id=>document.getElementById(id).value).join("");
-  if(code==="2417") correct("The chai locker is open!");
-  else wrong("Wrong code. Read the numbers from left to right.");
-}
+        const hints = [
+            "Start Screen: Click Start to kick off Friday!",
+            "Level 1: Look at the road! Indian roads always have cows, chai stalls, and auto-rickshaws!",
+            "Level 2: Swap the tiles until the tea cup and samosa form a clean office picture!",
+            "Level 3: Think like an Indian WhatsApp group admin!",
+            "Level 4: CHAI=4 letters, INDIA=5 letters, Square=4 sides, Auto=3 wheels -> 4543!",
+            "Level 5: It's the most famous tea-time biscuit and noodle in India!",
+            "Level 6: Choose the option that keeps your manager and family happy!",
+            "Level 7: Mogambo is ALWAYS khush!",
+            "Level 8: Free food always disappears first in any Indian office!",
+            "Level 9: The true Jugaadu way is always the most creative local trick!",
+            "Level 10: Is there REALLY any option other than TARANG SRIVASTAVA? Choose wisely!"
+        ];
+        alert(`💡 HINT (-50 Points): ${hints[currentLevel] || "Think like an Indian!"}`);
+    }
 
-const solvedPuzzle=["☕","🫖","🍪","🥛","🍩","📱","💻","📝","🔑"];
-function renderPuzzle(c){
-  puzzleState=[...solvedPuzzle].sort(()=>Math.random()-.5);
-  if(puzzleState.join("")===solvedPuzzle.join("")) [puzzleState[0],puzzleState[1]]=[puzzleState[1],puzzleState[0]];
-  c.innerHTML=`
-    <div class="target">🧩 Click one tile, then another tile to swap them. Assemble the chai-break picture.</div>
-    <div class="puzzle" id="puzzle"></div>
-    <div style="text-align:center;color:var(--muted);font-size:13px">Correct order: chai → kettle → biscuit → milk → donut → phone → laptop → note → key</div>`;
-  drawPuzzle();
-}
-function drawPuzzle(){
-  const p=document.getElementById("puzzle");p.innerHTML="";
-  puzzleState.forEach((x,i)=>{
-    const d=document.createElement("div");d.className="tile"+(selectedTile===i?" selected":"");
-    d.innerHTML=x+"<small>"+(i+1)+"</small>";
-    d.onclick=()=>tileClick(i);p.appendChild(d);
-  });
-}
-function tileClick(i){
-  if(answered) return;
-  if(selectedTile===null){selectedTile=i;drawPuzzle();return}
-  [puzzleState[selectedTile],puzzleState[i]]=[puzzleState[i],puzzleState[selectedTile]];
-  selectedTile=null;drawPuzzle();
-  if(puzzleState.join("")===solvedPuzzle.join("")) correct("Perfect! Chai break assembled.");
-}
+    // SHOW RECURRING CHARACTER MODAL
+    function showCharacterPopup(avatar, name, quote, nextCallback) {
+        playSound('cheer');
+        let stage = document.getElementById('stage');
+        let modal = document.createElement('div');
+        modal.className = 'char-modal';
+        modal.innerHTML = `
+            <div class="char-avatar">${avatar}</div>
+            <div class="char-name">${name}</div>
+            <div class="char-quote">"${quote}"</div>
+            <button class="btn-main" id="char-btn">CONTINUE 🚀</button>
+        `;
+        stage.appendChild(modal);
+        document.getElementById('char-btn').onclick = () => {
+            modal.remove();
+            nextCallback();
+        };
+    }
 
-function renderWhatsapp(c){
-  c.innerHTML=`
-    <div class="visual">
-      <div class="whatsapp">
-        <div class="wa-head">💬 Office Group — 4:55 PM</div>
-        <div class="msg left"><b>Manager:</b><br>Guys, quick call at 5?</div>
-        <div class="msg right">Sure 👍</div>
-        <div class="msg left">Yes, joining.</div>
-        <div class="msg right">Can we do tomorrow? 😅</div>
-        <div class="msg left"><b>Manager:</b><br>It will only take 5 minutes.</div>
-        <div class="msg right">I am just stepping out for chai...</div>
-      </div>
-    </div>
-    <div class="question">Who is most likely avoiding the meeting?</div>
-    <div class="options">
-      <button class="option" onclick="correct('You caught the chai escape plan.')">😅 The person going for chai</button>
-      <button class="option" onclick="wrong()">👨‍💼 The manager</button>
-      <button class="option" onclick="wrong()">🙋 The person who said yes</button>
-      <button class="option" onclick="wrong()">📱 The group admin</button>
-    </div>`;
-}
+    // RENDER START SCREEN
+    function renderStartScreen() {
+        currentLevel = 0;
+        updateHUD();
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h1>🇮🇳 GERMANE MEDIA LLC PRESENTS</h1>
+            <h2 style="font-size:32px; color:#ffd700;">THE GREAT INDIAN OFFICE CHAOS</h2>
+            <p style="font-size:16px; font-weight:700; color:#ff007f;">"Can you survive a normal Friday in India?"</p>
+            <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; margin:15px 0; max-width:500px;">
+                <p>⏱️ <strong>30 MINUTES</strong> | 🧩 <strong>10 LEVELS</strong> | 👥 <strong>5 PLAYERS</strong></p>
+                <p style="font-size:12px; color:#aaa;">🚨 ALERT! It's Friday. Workday traffic, WhatsApp forwards, UPI PINs, WFH drama, and Bollywood chaos await!</p>
+            </div>
+            <div style="margin-bottom:15px;">
+                <label style="font-size:12px; font-weight:700;">ENTER TEAM NAME:</label><br>
+                <input type="text" id="team-input" value="THE JUGAADUS" style="padding:10px; border-radius:8px; border:2px solid #ffd700; background:#110d29; color:#fff; font-weight:700; text-align:center; font-size:16px;">
+            </div>
+            <button class="btn-main" onclick="startGame()">START THE CHAOS 🚀</button>
+        `;
+    }
 
-function renderDifference(c){
-  c.innerHTML=`
-    <div class="diff-grid">
-      <div class="scene"><h3>LEFT DESK</h3><div class="scene-items">
-        <div class="scene-item">☕</div><div class="scene-item">💻</div><div class="scene-item">🌱</div>
-        <div class="scene-item">🖱️</div><div class="scene-item">📒</div><div class="scene-item">🖊️</div>
-      </div></div>
-      <div class="scene"><h3>RIGHT DESK</h3><div class="scene-items">
-        <div class="scene-item">☕</div><div class="scene-item">💻</div><div class="scene-item">🌱</div>
-        <div class="scene-item">🖱️</div><div class="scene-item">📕</div><div class="scene-item">🖊️</div>
-      </div></div>
-    </div>
-    <div class="question">What is different?</div>
-    <div class="options">
-      <button class="option" onclick="wrong()">☕ The cup</button>
-      <button class="option" onclick="wrong()">💻 The laptop</button>
-      <button class="option" onclick="correct('Yes! The notebook changed from blue to red.')">📒 The notebook</button>
-      <button class="option" onclick="wrong()">🌱 The plant</button>
-    </div>`;
-}
+    function startGame() {
+        let input = document.getElementById('team-input').value;
+        if (input.trim()) teamName = input.trim().toUpperCase();
+        document.getElementById('display-team').innerText = `TEAM: ${teamName}`;
+        startTimer();
+        playSound('cheer');
+        showCharacterPopup('👨‍💼', 'TARANG (The HR Boss)', 'Welcome to Friday! 30 minutes on the clock. Survive all 10 challenges and don\'t embarrass HR!', loadLevel1);
+    }
 
-function renderObject(c){
-  c.innerHTML=`
-    <div class="visual">
-      <div style="text-align:center">
-        <div style="font-size:150px;filter:drop-shadow(0 10px 20px rgba(0,0,0,.3))">🥫</div>
-        <div style="font-size:13px;color:var(--muted)">ZOOMED-IN VIEW</div>
-      </div>
-    </div>
-    <div class="question">What everyday Indian thing is this?</div>
-    <div class="options">
-      <button class="option" onclick="correct('Parle-G has entered the chat.')">🍪 Biscuit packet</button>
-      <button class="option" onclick="wrong()">🧴 Shampoo bottle</button>
-      <button class="option" onclick="wrong()">🥤 Cold drink</button>
-      <button class="option" onclick="wrong()">🖨️ Printer cartridge</button>
-    </div>`;
-}
+    // LEVEL 1: TRAFFIC SIMULATOR
+    let level1Targets = { cow: false, auto: false, chai: false, rider: false, scooter: false };
+    function loadLevel1() {
+        currentLevel = 1;
+        updateHUD();
+        level1Targets = { cow: false, auto: false, chai: false, rider: false, scooter: false };
+        
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🚗 LEVEL 1: INDIAN TRAFFIC SIMULATOR</h2>
+            <p>Click and find all 5 iconic traffic items on the road!</p>
+            <div class="traffic-box" id="traffic-canvas">
+                <div class="traffic-target" style="top:220px; left:280px;" onclick="findTraffic('cow', this)">🐄</div>
+                <div class="traffic-target" style="top:120px; left:100px;" onclick="findTraffic('auto', this)">🛺</div>
+                <div class="traffic-target" style="top:40px; left:550px;" onclick="findTraffic('chai', this)">☕</div>
+                <div class="traffic-target" style="top:260px; left:620px;" onclick="findTraffic('rider', this)">🏍️</div>
+                <div class="traffic-target" style="top:180px; left:440px;" onclick="findTraffic('scooter', this)">🛵</div>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;" id="traffic-checklist">
+                <span class="badge" id="chk-cow">🐄 Cow</span>
+                <span class="badge" id="chk-auto">🛺 Auto</span>
+                <span class="badge" id="chk-chai">☕ Chai Stall</span>
+                <span class="badge" id="chk-rider">🏍️ Helmetless Rider</span>
+                <span class="badge" id="chk-scooter">🛵 Red Scooter</span>
+            </div>
+        `;
+    }
 
-function renderEmoji(c){
-  c.innerHTML=`
-    <div class="visual"><div class="emoji-big">💻 + 📅 + 😐 + ☕</div></div>
-    <div class="question">What does this describe?</div>
-    <div class="options">
-      <button class="option" onclick="correct('Monday meeting. Everyone knows this feeling.')">😐 Monday morning meeting</button>
-      <button class="option" onclick="wrong()">🎂 Birthday party</button>
-      <button class="option" onclick="wrong()">🏖️ Holiday</button>
-      <button class="option" onclick="wrong()">🏏 Cricket match</button>
-    </div>`;
-}
+    function findTraffic(key, el) {
+        if (!level1Targets[key]) {
+            level1Targets[key] = true;
+            playSound('pop');
+            el.classList.add('found');
+            document.getElementById(`chk-${key}`).style.background = '#00ff88';
+            document.getElementById(`chk-${key}`).style.color = '#000';
 
-function renderOfficeCode(c){
-  c.innerHTML=`
-    <div class="visual" style="display:block;text-align:center">
-      <div style="font-size:30px;font-weight:900;line-height:1.9">
-        ☕ CHAI = ?<br>
-        🥤 CUP = ?<br>
-        🍵 TEA = ?<br>
-        📱 PHONE = ?
-      </div>
-      <div class="code-hint">Count the letters. Put the four numbers together.</div>
-      <div class="codebox">
-        <input maxlength="1" inputmode="numeric" id="o1">
-        <input maxlength="1" inputmode="numeric" id="o2">
-        <input maxlength="1" inputmode="numeric" id="o3">
-        <input maxlength="1" inputmode="numeric" id="o4">
-        <input maxlength="1" inputmode="numeric" id="o5">
-      </div>
-      <button class="cta" onclick="checkOfficeCode()">🔐 CHECK CODE</button>
-    </div>`;
-}
-function checkOfficeCode(){
-  const code=["o1","o2","o3","o4","o5"].map(id=>document.getElementById(id).value).join("");
-  if(code==="43335") correct("Correct. 4, 3, 3, 5 = 4335. The extra 5 is your bonus confidence point. 😄");
-  else if(code==="4335") correct("Correct! CHAI=4, CUP=3, TEA=3, PHONE=5.");
-  else wrong("Count the letters: CHAI=4, CUP=3, TEA=3, PHONE=5.");
-}
+            if (Object.values(level1Targets).every(v => v)) {
+                score += 125;
+                playSound('ting');
+                showCharacterPopup('👴', 'SHARMA JI', 'Beta! Even in peak Silk Board traffic, you found everything! +125 Points!', loadLevel2);
+            }
+        }
+    }
 
-function renderFinal(c){
-  c.innerHTML=`
-    <div class="final">
-      <div style="font-size:65px">🏆</div>
-      <h2>THE MOST IMPORTANT QUESTION</h2>
-      <p class="subtitle">After all this hard work, there is only one thing left to decide.</p>
-      <div class="final-options">
-        <button class="option" onclick="finalWrong()">👨‍💼 Alex</button>
-        <button class="option" onclick="finalWrong()">👩‍💼 Priya</button>
-        <button class="option" onclick="finalWrong()">🧑‍💻 Rahul</button>
-        <button class="option" onclick="finalCorrect()">👑 Tarang Srivastava</button>
-      </div>
-      <div id="finalMessage" class="feedback"></div>
-    </div>`;
-}
-function finalWrong(){
-  finalMistakes++;
-  const f=document.getElementById("finalMessage");
-  f.className="feedback bad";
-  if(finalMistakes===1){
-    f.textContent="❌ 😡 WRONG ANSWER! Are you serious?";
-  }else if(finalMistakes===2){
-    f.textContent="😡 Do you really think I am not good?";
-  }else{
-    f.textContent="BRO... after everything HR has done for you? 😂";
-  }
-  beep("wrong");
-}
-function finalCorrect(){
-  if(answered) return;
-  answered=true;
-  score += levels[9].points;
-  document.getElementById("score").textContent=score;
-  document.getElementById("finalMessage").className="feedback good";
-  document.getElementById("finalMessage").textContent="🏆 CORRECT! Obviously. Tarang Srivastava is the BEST HR. +"+levels[9].points+" points";
-  document.getElementById("nextBtn").style.display="inline-block";
-  beep("win");confetti();
-}
+    // LEVEL 2: CHAI BREAK CRISIS (PUZZLE)
+    let puzzleState = [3, 7, 1, 9, 2, 5, 8, 4, 6];
+    let selectedTileIndex = null;
+    const tileIcons = ["☕", "🥐", "💻", "📱", "🍪", "📒", "🖊️", "🥪", "⏰"];
 
-function nextLevel(){
-  if(level<9){level++;renderLevel();window.scrollTo({top:0,behavior:"smooth"});beep("next");}
-  else finishGame();
-}
-function finishGame(){
-  if(timerId) clearInterval(timerId);
-  document.getElementById("game").innerHTML=`
-    <div class="card" style="text-align:center;padding:55px 25px">
-      <div style="font-size:80px">🎉🏆🎉</div>
-      <div class="kicker">CASE CLOSED</div>
-      <h2>THE CHAOS HAS BEEN SOLVED!</h2>
-      <p class="subtitle">Final score: <b style="color:var(--yellow);font-size:30px">${score}</b></p>
-      <p class="subtitle">And yes... the best HR is still Tarang Srivastava. 😎</p>
-      <button class="cta" onclick="location.reload()">🔄 PLAY AGAIN</button>
-    </div>`;
-  confetti();
-  beep("win");
-}
+    function loadLevel2() {
+        currentLevel = 2;
+        updateHUD();
+        puzzleState = [3, 7, 1, 9, 2, 5, 8, 4, 6];
+        selectedTileIndex = null;
+        renderPuzzle();
+    }
 
-function showPopup(e,t,p){
-  document.getElementById("popupEmoji").textContent=e;
-  document.getElementById("popupTitle").textContent=t;
-  document.getElementById("popupText").textContent=p;
-  document.getElementById("popupOverlay").style.display="flex";
-}
-function closePopup(){document.getElementById("popupOverlay").style.display="none"}
+    function renderPuzzle() {
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>☕ LEVEL 2: CHAI BREAK CRISIS</h2>
+            <p>Click two tiles to swap them and assemble the office chai table (1 to 9)!</p>
+            <div class="puzzle-grid" id="puzzle-grid"></div>
+        `;
+        let grid = document.getElementById('puzzle-grid');
+        puzzleState.forEach((val, idx) => {
+            let tile = document.createElement('div');
+            tile.className = `puzzle-tile ${selectedTileIndex === idx ? 'selected' : ''}`;
+            tile.innerHTML = `<div>${tileIcons[val-1]}<div style="font-size:10px;">${val}</div></div>`;
+            tile.onclick = () => onTileClick(idx);
+            grid.appendChild(tile);
+        });
+    }
 
-function toggleSound(){
-  soundOn=!soundOn;
-  document.getElementById("soundBtn").textContent=soundOn?"🔊 Sound ON":"🔇 Sound OFF";
-  if(soundOn) beep("correct");
-}
+    function onTileClick(idx) {
+        playSound('pop');
+        if (selectedTileIndex === null) {
+            selectedTileIndex = idx;
+        } else {
+            let temp = puzzleState[selectedTileIndex];
+            puzzleState[selectedTileIndex] = puzzleState[idx];
+            puzzleState[idx] = temp;
+            selectedTileIndex = null;
 
-function beep(type){
-  if(!soundOn) return;
-  try{
-    const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const notes=type==="correct"?[660,880]:type==="wrong"?[180,120]:type==="win"?[523,659,784,1047]:[440];
-    notes.forEach((freq,i)=>{
-      let o=ctx.createOscillator(),g=ctx.createGain();
-      o.type=type==="wrong"?"sawtooth":"sine";o.frequency.value=freq;
-      g.gain.setValueAtTime(.001,ctx.currentTime+i*.09);
-      g.gain.exponentialRampToValueAtTime(.12,ctx.currentTime+i*.09+.02);
-      g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+i*.09+.16);
-      o.connect(g);g.connect(ctx.destination);o.start(ctx.currentTime+i*.09);o.stop(ctx.currentTime+i*.09+.18);
-    });
-  }catch(e){}
-}
+            if (puzzleState.every((val, i) => val === i + 1)) {
+                score += 150;
+                playSound('cheer');
+                showCharacterPopup('☕', 'RAJU (Chai Wala)', 'Chai is ready. Productivity can wait! +150 Points!', loadLevel3);
+                return;
+            }
+        }
+        renderPuzzle();
+    }
 
-function confetti(){
-  const box=document.getElementById("confetti");box.innerHTML="";box.style.display="block";
-  const symbols=["🟨","🟧","🟥","🟦","🟩","⭐"];
-  for(let i=0;i<80;i++){
-    const x=document.createElement("i");
-    x.textContent=symbols[Math.floor(Math.random()*symbols.length)];
-    x.style.left=Math.random()*100+"%";x.style.top=(-10-Math.random()*30)+"px";
-    x.style.animationDelay=Math.random()*1.2+"s";
-    x.style.fontSize=(10+Math.random()*12)+"px";
-    box.appendChild(x);
-  }
-  setTimeout(()=>box.style.display="none",3500);
-}
+    // LEVEL 3: WHATSAPP UNIVERSITY
+    let waIndex = 0;
+    const waQuestions = [
+        { q: 'What does a text saying "Hmm." REALLY mean?', opts: ["A. Okay", "B. I am neutral", "C. We need to talk / Danger!", "D. Nothing"], ans: 2 },
+        { q: 'What does a text saying "K." mean?', opts: ["A. Passive aggressive anger", "B. Okay cool", "C. Keyboard broken", "D. Okay bro"], ans: 0 },
+        { q: 'A message is "Seen at 10:42 PM". Should you reply?', opts: ["A. Reply immediately", "B. DO NOT reply unless you want trouble", "C. Send GIF", "D. Call them"], ans: 1 },
+        { q: 'Uncle sends a "Good Morning Lotus GIF" in family group. What to do?', opts: ["A. Ignore it", "B. Reply with folded hands 🙏", "C. Leave group", "D. Report spam"], ans: 1 },
+        { q: 'Forward: "Drinking chai cures 100% of software bugs". Reaction?', opts: ["A. Scientifically true", "B. Share with manager", "C. Acknowledge the wisdom", "D. All of the above!"], ans: 3 }
+    ];
+
+    function loadLevel3() {
+        currentLevel = 3;
+        updateHUD();
+        waIndex = 0;
+        renderWA();
+    }
+
+    function renderWA() {
+        let qData = waQuestions[waIndex];
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>📱 LEVEL 3: WHATSAPP UNIVERSITY (${waIndex+1}/5)</h2>
+            <div style="background:#075e54; padding:12px; border-radius:10px; max-width:500px; width:100%; margin-bottom:15px; text-align:left;">
+                <span style="color:#25d366; font-size:12px; font-weight:700;">💬 INCOMING WHATSAPP MESSAGE</span>
+                <div style="background:#dcf8c6; color:#000; padding:10px; border-radius:8px; margin-top:5px; font-weight:700;">
+                    ${qData.q}
+                </div>
+            </div>
+            <div class="option-grid">
+                ${qData.opts.map((opt, i) => `<button class="btn-option" onclick="answerWA(${i})">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerWA(idx) {
+        if (idx === waQuestions[waIndex].ans) {
+            playSound('ting');
+        } else {
+            playSound('beep');
+        }
+        waIndex++;
+        if (waIndex < waQuestions.length) {
+            renderWA();
+        } else {
+            score += 150;
+            showCharacterPopup('👨‍💻', 'ROHIT (Employee)', 'Bro, WhatsApp forwards are 100% factual! +150 Points!', loadLevel4);
+        }
+    }
+
+    // LEVEL 4: CRACK THE UPI CODE
+    let enteredCode = "";
+    function loadLevel4() {
+        currentLevel = 4;
+        updateHUD();
+        enteredCode = "";
+        renderUPI();
+    }
+
+    function renderUPI() {
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🔐 LEVEL 4: CRACK THE UPI CODE</h2>
+            <p>Solve the 4 clues to enter the UPI PIN:</p>
+            <div style="background:rgba(0,0,0,0.3); padding:10px; border-radius:10px; max-width:500px; text-align:left; font-size:12px; margin-bottom:10px;">
+                1️⃣ Number of letters in CHAI = ?<br>
+                2️⃣ Number of letters in INDIA = ?<br>
+                3️⃣ How many sides does a square have? = ?<br>
+                4️⃣ How many wheels does an auto have? = ?
+            </div>
+            <div style="font-size:28px; font-weight:900; letter-spacing:10px; color:#00f2fe; margin-bottom:10px;">
+                ${(enteredCode + "••••").slice(0,4)}
+            </div>
+            <div class="upi-keypad">
+                ${[1,2,3,4,5,6,7,8,9].map(num => `<button class="key-btn" onclick="pressUPI('${num}')">${num}</button>`).join('')}
+                <button class="key-btn" style="background:#ff0033;" onclick="pressUPI('C')">C</button>
+                <button class="key-btn" onclick="pressUPI('0')">0</button>
+                <button class="key-btn" style="background:#00ff88; color:#000;" onclick="submitUPI()">✓</button>
+            </div>
+        `;
+    }
+
+    function pressUPI(val) {
+        playSound('pop');
+        if (val === 'C') {
+            enteredCode = "";
+        } else if (enteredCode.length < 4) {
+            enteredCode += val;
+        }
+        renderUPI();
+    }
+
+    function submitUPI() {
+        if (enteredCode === "4543") {
+            score += 150;
+            playSound('cheer');
+            let stage = document.getElementById('stage');
+            stage.innerHTML = `
+                <h2>🔓 PAYMENT SUCCESSFUL ₹0.00</h2>
+                <p style="font-size:20px; color:#00ff88;">"Congratulations. You still have money." 😂</p>
+            `;
+            setTimeout(() => {
+                showCharacterPopup('📱', 'UPI SERVER', 'Transaction completed in 0.2 seconds! +150 Points!', loadLevel5);
+            }, 1500);
+        } else {
+            playSound('beep');
+            alert("WRONG PIN! Try again! (Hint: Check the clues!)");
+            enteredCode = "";
+            renderUPI();
+        }
+    }
+
+    // LEVEL 5: WHAT'S IN THE OFFICE?
+    let level5Index = 0;
+    const level5Items = [
+        { name: "PARLE-G", hint: "Iconic yellow biscuit packet with a famous baby!", opts: ["PARLE-G", "BOURBON", "GOOD DAY", "HIDE & SEEK"], ans: 0 },
+        { name: "SAMOSA", hint: "Triangular golden crispy snack filled with spicy potato!", opts: ["KACHORI", "SAMOSA", "BREAD PAKORA", "SPRING ROLL"], ans: 1 },
+        { name: "MAGGI", hint: "2-minute yellow noodles cooked in office pantry!", opts: ["CHOWMEIN", "PASTA", "MAGGI", "RAMEN"], ans: 2 },
+        { name: "DELHI METRO CARD", hint: "Smart card swiped every morning at the turnstile!", opts: ["CREDIT CARD", "DELHI METRO CARD", "GYM PASS", "PAN CARD"], ans: 1 },
+        { name: "PRESSURE COOKER", hint: "Whistling kitchen hero heard during WFH calls!", opts: ["PRESSURE COOKER", "THERMOS", "KETTLE", "WATER BOTTLE"], ans: 0 }
+    ];
+
+    function loadLevel5() {
+        currentLevel = 5;
+        updateHUD();
+        level5Index = 0;
+        renderLevel5();
+    }
+
+    function renderLevel5() {
+        let item = level5Items[level5Index];
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🍕 LEVEL 5: WHAT'S IN THE OFFICE? (${level5Index+1}/5)</h2>
+            <div style="font-size:60px; margin:15px; filter:blur(2px); transition:filter 0.5s;" id="blur-obj">
+                ${['🍪', '🥟', '🍜', '💳', '🍲'][level5Index]}
+            </div>
+            <p><strong>CLUE:</strong> "${item.hint}"</p>
+            <div class="option-grid">
+                ${item.opts.map((opt, i) => `<button class="btn-option" onclick="answerLevel5(${i})">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerLevel5(idx) {
+        if (idx === level5Items[level5Index].ans) {
+            playSound('ting');
+        } else {
+            playSound('beep');
+        }
+        level5Index++;
+        if (level5Index < level5Items.length) {
+            renderLevel5();
+        } else {
+            score += 150;
+            showCharacterPopup('👨‍🍳', 'PANTRY GUY', 'Office snacks identified with 100% accuracy! +150 Points!', loadLevel6);
+        }
+    }
+
+    // LEVEL 6: THE WFH SURVIVAL TEST
+    let wfhIndex = 0;
+    const wfhScenarios = [
+        { q: "On a serious Google Meet. Mom asks: 'Beta, chai bana du?'", opts: ["A. Pretend internet froze", "B. Say 'One minute' and mute", "C. Start making chai", "D. Introduce Mom to VP"], ans: 1 },
+        { q: "Your dog barks loudly during manager's presentation.", opts: ["A. 'Sir, that's neighbour's dog!'", "B. Bark back", "C. Leave meeting", "D. Put dog on camera"], ans: 0 },
+        { q: "Manager asks: 'Share screen' (37 Chrome tabs open).", opts: ["A. Share full desktop", "B. Cry", "C. Panic close tabs & share window only", "D. Disconnect call"], ans: 2 },
+        { q: "Wi-Fi dies 2 minutes before Friday deadline.", opts: ["A. Stand near window for 5G hotspot", "B. Send telegram", "C. Restart laptop 10x", "D. Blame solar flare"], ans: 0 },
+        { q: "Delivery boy rings bell repeatedly during townhall.", opts: ["A. Ignore pizza", "B. Thumbs up emoji & sprint to door", "C. Scream 'AAYA!'", "D. Cancel order"], ans: 1 }
+    ];
+
+    function loadLevel6() {
+        currentLevel = 6;
+        updateHUD();
+        wfhIndex = 0;
+        renderWFH();
+    }
+
+    function renderWFH() {
+        let sc = wfhScenarios[wfhIndex];
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🧑‍💻 LEVEL 6: WFH SURVIVAL TEST (${wfhIndex+1}/5)</h2>
+            <p style="font-size:16px; font-weight:700; color:#ffd700;">SITUATION: "${sc.q}"</p>
+            <div class="option-grid">
+                ${sc.opts.map((opt, i) => `<button class="btn-option" onclick="answerWFH(${i})">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerWFH(idx) {
+        playSound('ting');
+        wfhIndex++;
+        if (wfhIndex < wfhScenarios.length) {
+            renderWFH();
+        } else {
+            score += 200;
+            showCharacterPopup('🎧', 'MONU (WFH Legend)', 'Camera was off, but performance was 100%! +200 Points!', loadLevel7);
+        }
+    }
+
+    // LEVEL 7: GUESS THE BOLLYWOOD MOMENT
+    let bollyIndex = 0;
+    const bollyQuestions = [
+        { q: "🚢 ❤️ 💔", opts: ["Titanic", "Dil Dhadakne Do", "Housefull", "Lagaan"], ans: 0 },
+        { q: "👑 🦁", opts: ["The Lion King", "Bahubali", "RRR", "Dangal"], ans: 0 },
+        { q: "🎸 ❤️ 🎤", opts: ["Aashiqui 2", "Rockstar", "Rock On", "Dil Chahta Hai"], ans: 0 },
+        { q: "Dialogue: 'Mogambo ______ hua!'", opts: ["khush", "dukh", "pagal", "gussa"], ans: 0 },
+        { q: "Dialogue: 'Picture abhi ______ hai mere dost!'", opts: ["baaki", "khatam", "delayed", "hit"], ans: 0 }
+    ];
+
+    function loadLevel7() {
+        currentLevel = 7;
+        updateHUD();
+        bollyIndex = 0;
+        renderBolly();
+    }
+
+    function renderBolly() {
+        let bq = bollyQuestions[bollyIndex];
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🎬 LEVEL 7: BOLLYWOOD MOMENT (${bollyIndex+1}/5)</h2>
+            <div style="font-size:36px; margin:15px;">${bq.q}</div>
+            <div class="option-grid">
+                ${bq.opts.map((opt, i) => `<button class="btn-option" onclick="answerBolly(${i})">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerBolly(idx) {
+        if (idx === bollyQuestions[bollyIndex].ans) playSound('ting');
+        else playSound('beep');
+        
+        bollyIndex++;
+        if (bollyIndex < bollyQuestions.length) {
+            renderBolly();
+        } else {
+            score += 200;
+            showCharacterPopup('💃', 'BOLLYWOOD DIRECTOR', 'Wah! Kya acting hai! Absolute blockbuster! +200 Points!', loadLevel8);
+        }
+    }
+
+    // LEVEL 8: THE GREAT INDIAN FOOD WAR
+    let foodIndex = 0;
+    const foodWars = [
+        { q: "ROUND 1: Samosa 🆚 Kachori", opts: ["Samosa", "Kachori"] },
+        { q: "ROUND 2: Chai 🆚 Coffee", opts: ["Chai", "Coffee"] },
+        { q: "ROUND 3: Pizza 🆚 Biryani", opts: ["Pizza", "Biryani"] },
+        { q: "ROUND 4: Momos 🆚 Golgappa", opts: ["Momos", "Golgappa"] },
+        { q: "BONUS: Which food disappears FIRST in office pantry?", opts: ["Free Samosas!", "Anything complimentary!"] }
+    ];
+
+    function loadLevel8() {
+        currentLevel = 8;
+        updateHUD();
+        foodIndex = 0;
+        renderFood();
+    }
+
+    function renderFood() {
+        let fw = foodWars[foodIndex];
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🍛 LEVEL 8: THE GREAT INDIAN FOOD WAR (${foodIndex+1}/5)</h2>
+            <p style="font-size:18px; font-weight:700;">${fw.q}</p>
+            <div style="display:flex; gap:20px; margin-top:20px; justify-content:center; width:100%; max-width:500px;">
+                ${fw.opts.map((opt) => `<button class="btn-main" style="flex:1;" onclick="answerFood()">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerFood() {
+        playSound('pop');
+        foodIndex++;
+        if (foodIndex < foodWars.length) {
+            renderFood();
+        } else {
+            score += 150;
+            showCharacterPopup('🍕', 'PANTRY HERO', 'Food debate settled without regional wars! +150 Points!', loadLevel9);
+        }
+    }
+
+    // LEVEL 9: JUGAAD MASTER
+    let jugaadIndex = 0;
+    const jugaadProbs = [
+        { q: "PROBLEM: Phone at 2%, no charger available.", opts: ["A. Plug USB into colleague's laptop while they get chai", "B. Put phone in fridge", "C. Cry", "D. Use solar power"], ans: 0 },
+        { q: "PROBLEM: Online meeting in 2 mins, internet gone.", opts: ["A. Run to balcony for phone 5G hotspot", "B. Send letter", "C. Blame ISP", "D. Restart router 10x"], ans: 0 },
+        { q: "PROBLEM: Delivery guy calls: 'Sir exact location?'", opts: ["A. 'Bhaiya, red water tank ke paas banyan tree ke peeche!'", "B. Send GPS again", "C. Cancel order", "D. Sing song"], ans: 0 }
+    ];
+
+    function loadLevel9() {
+        currentLevel = 9;
+        updateHUD();
+        jugaadIndex = 0;
+        renderJugaad();
+    }
+
+    function renderJugaad() {
+        let jp = jugaadProbs[jugaadIndex];
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>🧩 LEVEL 9: JUGAAD MASTER (${jugaadIndex+1}/3)</h2>
+            <p style="font-size:16px; font-weight:700; color:#ffd700;">${jp.q}</p>
+            <div class="option-grid">
+                ${jp.opts.map((opt, i) => `<button class="btn-option" onclick="answerJugaad(${i})">${opt}</button>`).join('')}
+            </div>
+        `;
+    }
+
+    function answerJugaad(idx) {
+        playSound('ting');
+        jugaadIndex++;
+        if (jugaadIndex < jugaadProbs.length) {
+            renderJugaad();
+        } else {
+            score += 200;
+            showCharacterPopup('💡', 'JUGAAD KING', 'Pure Indian innovation at its finest! +200 Points!', triggerLevel10Intro);
+        }
+    }
+
+    // LEVEL 10 INTRO & FINALE (TARANG SRIVASTAVA)
+    function triggerLevel10Intro() {
+        currentLevel = 10;
+        updateHUD();
+        playSound('scratch');
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <div style="animation: pulse 0.5s infinite;">
+                <h1 style="font-size:40px; color:#ff007f;">🚨 FINAL BOSS LEVEL 🚨</h1>
+                <h2 style="font-size:24px; color:#ffd700;">THE ULTIMATE QUESTION</h2>
+            </div>
+            <p>One final decision remains to survive Friday...</p>
+            <button class="btn-main" onclick="loadLevel10()">FACE THE FINAL QUESTION 👑</button>
+        `;
+    }
+
+    function loadLevel10() {
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h2>👑 LEVEL 10: THE FINAL QUESTION</h2>
+            <h1 style="font-size:32px; color:#ffd700; margin:20px 0;">WHO DO YOU THINK IS THE BEST HR?</h1>
+            <div class="option-grid">
+                <button class="btn-option" style="border-color:#ffd700; font-size:16px;" onclick="answerTarang('A')">OPTION A: Tarang Srivastava</button>
+                <button class="btn-option" onclick="answerTarang('B')">OPTION B: The HR Robot 🤖</button>
+                <button class="btn-option" onclick="answerTarang('C')">OPTION C: Google HR</button>
+                <button class="btn-option" onclick="answerTarang('D')">OPTION D: That HR Guy From LinkedIn</button>
+            </div>
+            <div id="tarang-feedback" style="margin-top:15px; font-size:18px; font-weight:900;"></div>
+        `;
+    }
+
+    function answerTarang(option) {
+        let fb = document.getElementById('tarang-feedback');
+        if (option === 'A') {
+            score += 500;
+            playSound('cheer');
+            
+            // Confetti
+            for(let i=0; i<30; i++) {
+                let p = document.createElement('div');
+                p.className = 'confetti-particle';
+                p.style.left = Math.random()*100 + '%';
+                p.style.background = ['#ffd700', '#ff007f', '#00ff88'][Math.floor(Math.random()*3)];
+                document.body.appendChild(p);
+            }
+
+            stage.innerHTML = `
+                <h1 style="font-size:45px; color:#00ff88;">🎉 CORRECT! 🎉</h1>
+                <h2 style="color:#ffd700;">"Obviously. Did you really think there was another answer?" ❤️</h2>
+                <p style="font-size:18px; color:#fff;">+500 BONUS POINTS AWARDED!</p>
+                <button class="btn-main" onclick="showGameOver()">VIEW FINAL SCORECARD 🏆</button>
+            `;
+        } else {
+            tarangWrongAttempts++;
+            playSound('scratch');
+            if (tarangWrongAttempts === 1) {
+                fb.innerHTML = `<span style="color:#ff0033;">❌ WRONG ANSWER 😡 Seriously? Try again!</span>`;
+            } else if (tarangWrongAttempts === 2) {
+                fb.innerHTML = `<span style="color:#ff0033;">😡 DO YOU REALLY THINK I AM NOT GOOD? Think carefully!</span>`;
+            } else {
+                fb.innerHTML = `<span style="color:#ffd700;">"Okay... now you're just doing this on purpose." 😂</span>`;
+            }
+        }
+    }
+
+    // GAME OVER / FINAL SCORECARD
+    function showGameOver() {
+        if (timerInterval) clearInterval(timerInterval);
+        playSound('cheer');
+
+        let totalScore = score;
+        let rank = "";
+        let rankDesc = "";
+
+        if (totalScore >= 1800) {
+            rank = "🏆 INDIAN OFFICE LEGENDS";
+            rankDesc = "Promotions for everyone! Sharma Ji is proud of your team!";
+        } else if (totalScore >= 1400) {
+            rank = "🔥 PROFESSIONAL JUGAADU";
+            rankDesc = "You can fix any office crisis with tape and a hot cup of chai.";
+        } else if (totalScore >= 1100) {
+            rank = "😎 FRIDAY SURVIVORS";
+            rankDesc = "You survived Friday without getting sent to HR!";
+        } else if (totalScore >= 800) {
+            rank = "☕ CHAI BREAK SPECIALISTS";
+            rankDesc = "More chai, less work. Still a respectable Friday effort.";
+        } else {
+            rank = "😭 PLEASE TAKE ANOTHER HR FRIDAY";
+            rankDesc = "Tarang will see your team in his office on Monday morning.";
+        }
+
+        let stage = document.getElementById('stage');
+        stage.innerHTML = `
+            <h1>🎉 GAME OVER - CHAOS SURVIVED!</h1>
+            <h2 style="color:#ffd700;">TEAM: ${teamName}</h2>
+            <div style="background:rgba(0,0,0,0.5); padding:20px; border-radius:15px; border:2px solid #00ff88; margin:15px 0; max-width:600px; width:100%;">
+                <div style="font-size:36px; font-weight:900; color:#00ff88;">TOTAL SCORE: ${totalScore}</div>
+                <div style="font-size:20px; font-weight:700; color:#ffd700; margin-top:10px;">${rank}</div>
+                <p style="font-size:14px; color:#ddd; margin-top:5px;">"${rankDesc}"</p>
+            </div>
+
+            <div style="display:flex; gap:15px; flex-wrap:wrap;">
+                <button class="btn-main" onclick="renderStartScreen()">PLAY AGAIN 🔄</button>
+            </div>
+        `;
+    }
+
+    // INITIALIZE ON LOAD
+    renderStartScreen();
 </script>
 </body>
 </html>
 """
 
-components.html(GAME_HTML, height=1250, scrolling=True)
+def main():
+    # Render the interactive single page application component inside Streamlit
+    st.components.v1.html(HTML_GAME, height=920, scrolling=True)
+
+if __name__ == "__main__":
+    main()

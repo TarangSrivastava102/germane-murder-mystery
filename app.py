@@ -151,7 +151,7 @@ function open(){
   <div class="brand">GERMANE MEDIA LLC PRESENTS</div>
   <h1>THE BLACKBOX<br>INCIDENT</h1>
   <h2>10-LEVEL TEAM MURDER MYSTERY</h2>
-  <p>Six suspects. One missing project file. A seven-minute blackout. Ten challenges stand between your team and the truth.</p>
+  <p>Six suspects. One missing project file. A seven-minute blackout. Ten challenges stand between your team and the truth. Built for teams playing together remotely.</p>
   <p><b>Nothing is revealed automatically.</b> Inspect, compare, decode, reconstruct and prove your accusation.</p>
   <button class="cta" onclick="setup()">START INVESTIGATION</button>
  </div>`;
@@ -182,9 +182,9 @@ function shell(){
  <div class="grid">
  <aside class="side"><div class="section">CASE PROGRESS</div><div class="levels">
  ${LEVEL_NAMES.map((n,i)=>`<button class="lvl ${i===S.level?"active":""} ${i<S.level?"done":""}" ${i<S.level?`onclick="S.level=${i};S.feedback='';S.sel='';S.temp={};render()"`:"disabled"}>${String(i+1).padStart(2,"0")} — ${n}</button>`).join("")}
- </div><div class="score"><div class="section">LIVE SCORE</div>${S.score}</div>
+ </div><div class="score"><div class="section">LIVE SCORE</div>${S.score}</div><div class="section">TEAM STATUS</div><div class="ev">${S.level>=9?"FINAL ACCUSATION":"LEVEL "+(S.level+1)+" OF 10"}</div>
  <button class="tiny" style="width:100%" onclick="chars()">SUSPECT FILES</button></aside>
- <main>${level()}</main>
+ <main><div class="note" style="margin-top:0">REMOTE TEAM MODE • Share one team member’s screen and solve together. Progress is kept in this browser tab.</div>${level()}</main>
  <aside class="right"><div class="section">EVIDENCE INVENTORY</div>
  ${S.evidence.length?S.evidence.map(x=>`<div class="ev">${esc(x)}</div>`).join(""):"<p style='color:#555;font-size:11px'>No evidence collected yet.</p>"}
  <div class="section" style="margin-top:18px">HINTS</div><p style="font-size:11px;color:#888">3 total • 50 points each</p>
@@ -301,7 +301,7 @@ function checkMatches(){
 /* 7 — Logic */
 function l7(){
  const w=S.temp.who||"";
- return `<div class="panel">${head(7,"SPOT THE LIE","Use the badge register and the statements. Only one statement cannot be true.")}<div class="logic">
+ return `<div class="panel">${head(7,"SPOT THE LIE","Use the badge register and the known access log. Only one statement contradicts the evidence.")}<div class="logic">
  <div class="logicbox"><b>ALEX</b> “My badge is AM-101, and I was never in the conference room.”</div>
  <div class="logicbox"><b>RYAN</b> “My badge is RC-204, and it was used at the security room.”</div>
  <div class="logicbox"><b>OLIVIA</b> “My badge is OR-119, and it was never used at the conference room.”</div></div>
@@ -331,7 +331,7 @@ function toggleQuestion(i){
 
 /* 9 — Vault */
 function l9(){
- return `<div class="panel">${head(9,"VAULT CODE","The vault uses four simple case facts. Find each number from the evidence you collected, then enter the four digits in order.")}<div class="terminal">VAULT INSTRUCTIONS
+ return `<div class="panel">${head(9,"VAULT CODE","The vault uses four simple case facts. Calculate each digit from the evidence, then enter the four digits in order.")}<div class="terminal">VAULT INSTRUCTIONS
 
 DIGIT 1 = number of suspects
 DIGIT 2 = length of the security blackout in minutes
@@ -346,7 +346,7 @@ Use the case evidence — not guesswork.</div>
 }
 function checkVault(){
  const v=(document.getElementById("vault")?.value||"").trim();
- check(8,v==="6744","Read all four formula lines. Use the four numbers exactly as displayed.");
+ check(8,v==="6344","Use the facts exactly as shown: 6 suspects, 3-minute blackout, hour 4, and 4 suspicious attempts.");
 }
 
 /* 10 — Final accusation */
@@ -387,7 +387,7 @@ function hint(){
  if(!S.hints)return;
  S.hints--;S.score=Math.max(0,S.score-50);
  const h=[
- "Inspect all six objects before locking the scene.",
+ "Inspect all four objects before locking the scene.",
  "Compare each suspect’s alibi with the critical window.",
  "Start with the printed timestamps and move left to right in time.",
  "The Caesar shift is the 3-minute difference between 4:14 and 4:17.",

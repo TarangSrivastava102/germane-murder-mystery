@@ -308,7 +308,7 @@ function l7(){
  <div class="logic" style="grid-template-columns:1fr"><div class="logicbox"><b>KNOWN FACT</b> The access log shows <b>OR-119</b> opening the conference-room door at 4:18 PM.</div></div>
  <div class="q"><h3>Who is lying?</h3><div class="answers">${["Alex","Ryan","Olivia"].map(x=>`<button class="ans ${w===x?"sel":""}" onclick="S.temp.who='${x}';render()">${x}</button>`).join("")}</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(6,w==='Olivia','Compare each badge with the 4:18 conference-room entry.')">CALL THE LIAR</button></div></div>`;
+ <button class="cta" onclick="check(6,S.temp.who==='Olivia','Compare each badge with the 4:18 conference-room entry.')">CALL THE LIAR</button></div></div>`;
 }
 /* 8 — Interrogation */
 function l8(){

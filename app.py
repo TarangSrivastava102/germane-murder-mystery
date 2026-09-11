@@ -1,139 +1,1973 @@
 import streamlit as st
 import streamlit.components.v1 as components
 
-st.set_page_config(page_title="Friday Fun: Office Chaos", page_icon="🎉", layout="wide")
+st.set_page_config(
+    page_title="Germane Media LLC — The Blackbox Incident",
+    page_icon="🕵️",
+    layout="wide"
+)
 
-HTML = r"""
+HTML = r'''
 <!doctype html>
 <html>
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <style>
+:root{
+    --bg:#080808;
+    --p:#121212;
+    --g:#d1ad65;
+    --r:#b74343;
+    --w:#eee9df;
+    --m:#969188;
+    --l:#2b2925;
+}
+
 *{box-sizing:border-box}
-body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(135deg,#fff4d6,#e9f7ff 45%,#fce8f3);color:#172033}
+
+body{
+    margin:0;
+    background:radial-gradient(circle at 70% 5%,#292015,#080808 42%);
+    color:var(--w);
+    font-family:Arial,sans-serif;
+}
+
 button,input{font:inherit}
-button{cursor:pointer;border:0}
-.app{max-width:1100px;margin:auto;padding:22px}
-.top{display:flex;justify-content:space-between;gap:15px;align-items:center;background:#ffffffd9;border:2px solid #fff;padding:15px 20px;border-radius:20px;box-shadow:0 8px 25px #26324a18}
-.logo{font-weight:900;letter-spacing:2px;color:#6c38c9}
-.badge{background:#172033;color:white;padding:9px 14px;border-radius:99px;font-weight:bold}
-.hero{text-align:center;min-height:82vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.hero h1{font-size:clamp(42px,8vw,88px);line-height:.95;margin:18px 0;color:#6c38c9}
-.hero p{max-width:650px;font-size:18px;line-height:1.6;color:#596579}
-.card{background:#ffffffed;border:2px solid white;border-radius:28px;padding:28px;box-shadow:0 15px 40px #26324a20}
-.setup{max-width:520px;width:100%;text-align:left}
-label{display:block;font-weight:800;margin-bottom:8px}
-input{width:100%;padding:15px;border:2px solid #dce3ef;border-radius:14px;margin-bottom:15px}
-.btn{padding:15px 23px;border-radius:14px;background:linear-gradient(135deg,#7544db,#ee5b9b);color:white;font-weight:900;box-shadow:0 7px 0 #5226a2;margin:8px 5px}
-.btn:active{transform:translateY(4px);box-shadow:0 3px 0 #5226a2}
-.btn.alt{background:#172033;box-shadow:0 7px 0 #080d18}
-.grid{display:grid;grid-template-columns:190px 1fr;gap:18px;margin-top:20px}
-.sidebar{background:#ffffffd9;border:2px solid white;border-radius:22px;padding:15px}
-.levels{display:grid;gap:8px;margin-top:12px}
-.lvl{padding:11px;border-radius:12px;text-align:left;background:#edf1f8;color:#687386;font-weight:bold}
-.lvl.active{background:#7544db;color:white}
-.lvl.done{background:#d8f5df;color:#1b7a43}
-.main{min-width:0}
-.title{font-size:clamp(28px,5vw,48px);margin:8px 0;color:#172033}
-.sub{color:#657187;line-height:1.6}
-.scene{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0}
-.tile{min-height:120px;background:#f7f9fd;border:3px solid #e1e7f1;border-radius:20px;padding:16px;font-size:35px}
-.tile span{display:block;font-size:15px;font-weight:800;margin-top:8px}
-.tile:hover{border-color:#7544db;background:#f1eaff}
-.question{background:#fff8df;border:2px dashed #e9bd4a;border-radius:20px;padding:20px;margin-top:20px}
-.options{display:flex;flex-wrap:wrap;gap:10px;margin:15px 0}
-.option{padding:13px 16px;background:white;border:2px solid #dfe5ef;border-radius:13px;font-weight:bold}
-.option:hover{border-color:#7544db}
-.feedback{padding:15px;border-radius:15px;background:#ffe4e4;color:#a92323;font-weight:bold;margin-top:12px}
-.success{padding:15px;border-radius:15px;background:#dcf8e5;color:#19733c;font-weight:bold;margin-top:12px}
-.progress{height:12px;background:#e6ebf3;border-radius:99px;overflow:hidden;margin:15px 0}
-.progress div{height:100%;background:linear-gradient(90deg,#7544db,#ee5b9b);width:0}
-.score{font-size:28px;font-weight:900;color:#7544db;margin:15px 0}
-@media(max-width:750px){.grid{grid-template-columns:1fr}.scene{grid-template-columns:repeat(2,1fr)}}
+button{cursor:pointer}
+
+.app{
+    max-width:1400px;
+    margin:auto;
+    padding:22px
+}
+
+.top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    border-bottom:1px solid var(--l);
+    padding:10px 0 16px;
+    position:sticky;
+    top:0;
+    background:#090909ee;
+    z-index:5
+}
+
+.brand{
+    font-size:11px;
+    letter-spacing:3px;
+    color:var(--g);
+    font-weight:800
+}
+
+.timer{
+    font:900 28px monospace;
+    color:var(--g)
+}
+
+.urgent{color:#e05a5a}
+
+.hero{
+    min-height:88vh;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    text-align:center
+}
+
+.hero h1{
+    font:normal 82px/.88 Georgia,serif;
+    letter-spacing:2px;
+    margin:20px
+}
+
+.hero h2{
+    letter-spacing:6px;
+    font-size:14px;
+    color:#c8bfae
+}
+
+.hero p{
+    max-width:650px;
+    color:var(--m);
+    line-height:1.7
+}
+
+.cta{
+    background:linear-gradient(135deg,#e3c27c,#a47e3b);
+    border:0;
+    padding:15px 25px;
+    font-weight:900;
+    letter-spacing:2px;
+    margin-top:18px;
+    color:#17130d
+}
+
+.setup{
+    width:min(520px,90%);
+    border:1px solid var(--l);
+    background:#101010;
+    padding:25px;
+    text-align:left
+}
+
+.setup label{
+    font-size:11px;
+    letter-spacing:2px;
+    color:#888;
+    display:block;
+    margin-bottom:8px
+}
+
+.setup input{
+    width:100%;
+    padding:13px;
+    background:#080808;
+    color:white;
+    border:1px solid #3a352d
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:210px 1fr 230px;
+    gap:16px;
+    margin-top:18px
+}
+
+.side,.right,.panel{
+    background:linear-gradient(150deg,#151515,#0d0d0d);
+    border:1px solid var(--l)
+}
+
+.side,.right{padding:16px}
+
+.side{min-height:650px}
+
+.panel{
+    padding:24px;
+    min-height:650px
+}
+
+.section{
+    font-size:10px;
+    letter-spacing:2px;
+    color:#777;
+    font-weight:bold
+}
+
+.levels{
+    display:grid;
+    gap:7px;
+    margin-top:14px
+}
+
+.lvl,.tiny,.ans{
+    background:#101010;
+    border:1px solid #302d28;
+    color:#bbb;
+    padding:11px;
+    text-align:left
+}
+
+.lvl.active{
+    border-color:var(--g);
+    color:var(--g);
+    background:#1d180f
+}
+
+.lvl.done{
+    color:#8fbc9a
+}
+
+.score{
+    border:1px solid var(--l);
+    padding:14px;
+    margin:18px 0;
+    font:900 28px monospace;
+    color:var(--g)
+}
+
+.ev{
+    background:#0a0a0a;
+    border-left:2px solid #705b37;
+    padding:9px;
+    margin:6px 0;
+    font-size:11px;
+    color:#bdb6aa
+}
+
+.head{
+    display:flex;
+    justify-content:space-between;
+    border-bottom:1px solid var(--l);
+    padding-bottom:16px;
+    margin-bottom:18px
+}
+
+.no{
+    color:var(--g);
+    font-size:10px;
+    letter-spacing:3px
+}
+
+.title{
+    font:38px Georgia,serif;
+    margin-top:6px
+}
+
+.brief{
+    color:var(--m);
+    line-height:1.55
+}
+
+.scene{
+    height:400px;
+    border:1px solid #413a30;
+    background:radial-gradient(circle at 50% 35%,#454036,#171615 60%);
+    position:relative;
+    overflow:hidden
+}
+
+.scene:before{
+    content:"CONFERENCE ROOM // 04:17";
+    position:absolute;
+    top:14px;
+    left:16px;
+    color:#ad9158;
+    font:11px monospace
+}
+
+.desk{
+    position:absolute;
+    left:14%;
+    bottom:70px;
+    width:72%;
+    height:80px;
+    background:#30271d;
+    border:2px solid #5b4c39
+}
+
+.obj{
+    position:absolute;
+    background:#0d0d0ddd;
+    border:1px solid #74603a;
+    color:#ead6a5;
+    padding:9px;
+    font-size:10px
+}
+
+.o1{left:44%;top:80px}
+.o2{left:24%;bottom:95px}
+.o3{left:45%;bottom:110px}
+.o4{left:61%;bottom:110px}
+.o5{left:71%;bottom:92px}
+
+.q{
+    margin-top:20px;
+    border-top:1px solid var(--l);
+    padding-top:18px
+}
+
+.answers{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px
+}
+
+.ans.sel{
+    border-color:var(--g);
+    background:#211a0d;
+    color:#f0d18b
+}
+
+.feedback{
+    padding:12px;
+    background:#17140f;
+    border-left:3px solid var(--g);
+    margin-top:12px
+}
+
+.riddle{
+    padding:35px;
+    text-align:center;
+    font:23px/1.7 Georgia,serif;
+    border:1px solid #373128;
+    background:#090909
+}
+
+.terminal{
+    font:13px/1.8 monospace;
+    background:#050505;
+    border:1px solid #393a32;
+    padding:20px;
+    color:#a9c7a9
+}
+
+.code{
+    display:block;
+    margin:20px auto;
+    padding:12px;
+    width:210px;
+    text-align:center;
+    font:28px monospace;
+    letter-spacing:9px;
+    background:#090909;
+    border:1px solid #5d5039;
+    color:white
+}
+
+.pieces{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:7px
+}
+
+.piece{
+    padding:15px 8px;
+    min-height:65px;
+    background:#0b0b0b;
+    border:1px dashed #534938;
+    color:#c9c0b0
+}
+
+.piece.sel{
+    border-color:var(--g);
+    background:#211b10
+}
+
+.assembled{
+    margin-top:15px;
+    min-height:100px;
+    background:#eee6d3;
+    color:#252119;
+    padding:18px;
+    font:17px/1.5 Georgia,serif
+}
+
+.suspects{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:9px
+}
+
+.sus{
+    padding:13px;
+    background:#0b0b0b;
+    border:1px solid var(--l)
+}
+
+.ava{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    border:1px solid #604f32;
+    color:var(--g);
+    margin-bottom:8px;
+    font-weight:bold
+}
+
+.sus small{
+    color:#777;
+    display:block;
+    margin-top:4px
+}
+
+.timeline{
+    display:grid;
+    gap:6px
+}
+
+.time{
+    display:grid;
+    grid-template-columns:80px 1fr;
+    background:#0b0b0b;
+    border-left:2px solid #614e30;
+    padding:9px
+}
+
+.time b{
+    font:11px monospace;
+    color:var(--g)
+}
+
+.final{
+    text-align:center;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center
+}
+
+.stamp{
+    border:2px solid var(--g);
+    padding:10px 20px;
+    letter-spacing:6px;
+    color:var(--g);
+    transform:rotate(-3deg)
+}
+
+.reveal{
+    font:64px Georgia,serif;
+    color:#f0d18b;
+    margin:20px
+}
+
+.modal{
+    position:fixed;
+    inset:0;
+    background:#000c;
+    display:grid;
+    place-items:center;
+    z-index:20
+}
+
+.modalbox{
+    width:min(760px,92%);
+    max-height:80vh;
+    overflow:auto;
+    background:#111;
+    border:1px solid #5b4b32;
+    padding:22px
+}
+
+.close{
+    float:right;
+    background:none;
+    border:0;
+    color:#aaa;
+    font-size:22px
+}
+
+.rule{
+    border:1px solid #302d28;
+    background:#0b0b0b;
+    padding:14px;
+    margin:12px 0;
+    color:#aaa;
+    font-size:12px;
+    line-height:1.6
+}
+
+@media(max-width:1050px){
+    .grid{grid-template-columns:1fr}
+    .side,.right{min-height:auto}
+}
+
+@media(max-width:650px){
+    .hero h1{font-size:54px}
+    .suspects,.pieces{grid-template-columns:1fr 1fr}
+    .title{font-size:29px}
+}
 </style>
 </head>
-<body>
-<div id="app" class="app"></div>
-<script>
-const levels=[
-{title:"The Chai Emergency",intro:"The office chai has arrived, but someone has taken the last biscuit. Find the most suspicious clue.",emoji:["☕","🍪","🧾","🖨️","📱","🪑"],labels:["Chai cup","Missing biscuit","Printer bill","Printer","Team chat","Empty chair"],question:"Who is most likely responsible for the missing biscuit?",options:["The person saying 'I am on a diet'","The person guarding the snack drawer","The office cat","The client"],correct:1,win:"Correct! The person guarding the snack drawer knows exactly where the biscuits went. Very suspicious."},
-{title:"The WhatsApp Group",intro:"The team group has 147 unread messages. You have 30 seconds before someone asks: 'Guys, any update?'",emoji:["📱","💬","😂","🙏","🔔","👀"],labels:["147 messages","Good morning","Meme","Reminder","Notification","Seen by all"],question:"What is the safest reply to a message saying 'Any update?'",options:["Working on it, will share shortly","Seen","👍","Ask what update"],correct:0,win:"Perfect corporate survival! Short, polite, and nobody can complain."},
-{title:"The Meeting That Could Be An Email",intro:"A meeting invite says 15 minutes. It has 23 attendees and no agenda. Choose your survival move.",emoji:["📅","🪑","🎤","📊","⏰","😵"],labels:["Calendar","Chairs","Mic","Slides","Clock","Confusion"],question:"What should you do first?",options:["Ask for an agenda","Start another meeting","Share a 40-slide deck","Say 'Let's circle back'"],correct:0,win:"Excellent. You saved 23 people from a meeting without a purpose."},
-{title:"The Lunchbox Mystery",intro:"Someone has taken the wrong lunchbox from the fridge. The evidence is spicy.",emoji:["🍱","🌶️","🥗","🧃","🥄","🧊"],labels:["Lunchbox","Spicy chutney","Salad","Juice","Spoon","Fridge"],question:"What is the most Indian-office solution?",options:["Announce it politely in the group","Start a detective agency","Eat everyone’s lunch","Blame the intern"],correct:0,win:"Diplomatic and deliciously sensible. The lunchbox owner has been found."},
-{title:"The Excel Olympics",intro:"You are given a spreadsheet with 18 tabs named Final, Final2, FinalNew, FinalLatest and FinalReallyLatest.",emoji:["📈","📊","⌨️","🖱️","🔢","🗂️"],labels:["Charts","Numbers","Keyboard","Mouse","Formula","18 tabs"],question:"What is the smartest next step?",options:["Ask which file is the actual final","Rename everything FinalFinal","Close the laptop","Use a random tab"],correct:0,win:"Correct! Always confirm the source before performing Excel gymnastics."},
-{title:"The Work From Home Test",intro:"Your camera is on. Your internet is unstable. A family member walks behind you with a pressure cooker.",emoji:["💻","📶","🎧","🍳","🏠","🙈"],labels:["Laptop","Wi-Fi","Headset","Kitchen","Home","Camera"],question:"What is the best professional response?",options:["Mute, acknowledge, and continue","Pretend the screen froze","Blame the Wi-Fi forever","Leave the meeting dramatically"],correct:0,win:"Smooth recovery! Professionalism with a little Indian-home realism."},
-{title:"The Salary Day Celebration",intro:"It is salary day. Everyone suddenly becomes active on Slack, Teams, WhatsApp and email.",emoji:["💸","🎉","📲","🛍️","🍕","🧮"],labels:["Salary","Celebration","Phone","Shopping","Pizza","Calculator"],question:"What is the most relatable salary-day plan?",options:["Pay bills, save some, enjoy some","Order everything online","Buy a car before lunch","Forget all responsibilities"],correct:0,win:"Balanced answer! Responsible adult with a little treat-yourself energy."},
-{title:"The Friday Fun Challenge",intro:"HR announces a fun activity. One person says, 'I have a client call.' Another says, 'I am shy.' Choose the best move.",emoji:["🎤","🎲","😂","🏆","🎯","🕺"],labels:["Mic","Game","Laughter","Prize","Target","Dance"],question:"How do you get more people involved?",options:["Keep it easy and voluntary","Force everyone to dance","Cancel the activity","Make a 12-page form"],correct:0,win:"Exactly! Fun works best when people feel comfortable joining."},
-{title:"The Office Politics Detector",intro:"Someone says, 'I am not saying anything, but...' The room becomes silent.",emoji:["👀","🤐","☕","🗣️","🚩","🧠"],labels:["Eyes","Silence","Chai","Talk","Red flag","Brain"],question:"What is the best HR-style response?",options:["Listen calmly and focus on facts","Forward it to everyone","Add more gossip","Pretend not to hear anything"],correct:0,win:"Correct! Listen, stay neutral, and bring the conversation back to facts."},
-{title:"The Best HR Question",intro:"The final challenge is extremely important. Choose carefully. The office is watching.",emoji:["🏆","👑","🎉","💼","❤️","⭐"],labels:["Trophy","Crown","Fun","HR","Heart","Star"],question:"Who do you think is the best HR?",options:["Tarang Srivastava","The person from Finance","The office printer","Nobody"],correct:0,win:"Correct answer! Tarang Srivastava is officially the best HR. 🎉"}
-];
-let state={screen:"home",team:"",level:0,score:0,selected:null,wrong:0,feedback:"",finished:false};
 
-function home(){
-document.getElementById("app").innerHTML=`
-<div class="hero">
-<div class="logo">GERMANE MEDIA • FRIDAY FUN</div>
-<h1>THE GREAT<br>OFFICE CHAOS 🎉</h1>
-<p>A colorful, relatable office adventure with 10 fun challenges. No boring quizzes. Just chai, meetings, lunchboxes, Excel drama and HR magic.</p>
-<button class="btn" onclick="setup()">START THE CHAOS 🚀</button>
-</div>`}
+<body>
+<div class="app" id="app"></div>
+
+<script>
+/* =========================================================
+   CASE DATA
+========================================================= */
+
+const C = [
+    [
+        "Alex Morgan",
+        "Chief Operating Officer",
+        "AM",
+        "Private video meeting, scheduled 4:00–4:30 PM.",
+        "Recording has a confirmed 4:13–4:19 PM gap.",
+        "Could be protecting the company."
+    ],
+    [
+        "Maya Kapoor",
+        "Head of Marketing",
+        "MK",
+        "Preparing a campaign presentation from 4:00–4:30 PM.",
+        "Laptop remained connected to the conference-room display.",
+        "Could gain strategic advantage."
+    ],
+    [
+        "Ryan Carter",
+        "Technology Lead",
+        "RC",
+        "Fixing a server issue in the technical area.",
+        "Access card was used near the security room at 4:14 PM.",
+        "Understands security infrastructure."
+    ],
+    [
+        "Sophie Bennett",
+        "Finance Manager",
+        "SB",
+        "Reviewing invoices in the finance department.",
+        "Recently discovered an unusual transaction.",
+        "May want to investigate privately."
+    ],
+    [
+        "Daniel Ross",
+        "Sales Director",
+        "DR",
+        "On a client call from 3:55–4:15 PM.",
+        "Call records confirm the call ended at 4:09 PM.",
+        "A confidential strategy could help a deal."
+    ],
+    [
+        "Olivia Reed",
+        "People & Culture Manager",
+        "OR",
+        "Employee meeting scheduled from 4:00–4:30 PM.",
+        "The attendee left at 4:11 PM; no second attendee was recorded.",
+        "Wanted evidence protecting herself from Victor."
+    ]
+];
+
+/*
+ Evidence is deliberately written so every important answer
+ can be derived from something shown to the player.
+*/
+const E = [
+    [
+        "Clock stopped at 4:17 PM.",
+        "Security card registered near the security room at 4:14 PM.",
+        "Conference-room display connection logged before the incident.",
+        "Coffee was still warm, indicating recent presence.",
+        "Torn document mentions a hidden transfer."
+    ],
+    [
+        "Security log: system disabled from 4:17 PM to 4:24 PM.",
+        "Security outage lasted exactly 7 minutes.",
+        "The security log records 4 suspicious access attempts."
+    ],
+    [
+        "Security code decoded: 6747.",
+        "Hidden CCTV frame: figure enters conference room at 4:18 PM."
+    ],
+    [
+        "Transfer authorization names Victor Sterling and Olivia Reed.",
+        "Meeting scheduled for 4:30 PM.",
+        "Document is marked INTERNAL ONLY."
+    ],
+    [
+        "Daniel's call ended at 4:09 PM.",
+        "Alex's recording gap is 4:13–4:19 PM.",
+        "Ryan's card was used at 4:14 PM, but his server log places him elsewhere.",
+        "Olivia's employee meeting ended when the attendee left at 4:11 PM.",
+        "No second attendee was recorded for Olivia's 4:00–4:30 meeting."
+    ],
+    [
+        "Olivia sought evidence that would protect her from Victor's actions.",
+        "Method: disable security → enter → take document → confrontation → leave.",
+        "Olivia leaves the conference area at approximately 4:23 PM."
+    ]
+];
+
+const names = [
+    "THE CRIME SCENE",
+    "THE RIDDLE FILE",
+    "CRACK THE CODE",
+    "ASSEMBLE THE EVIDENCE",
+    "THE ALIBI GAME",
+    "THE FINAL ACCUSATION"
+];
+
+/*
+ Level 4 is intentionally ordered as a logical document.
+*/
+const P = [
+    "TRANSFER",
+    "APPROVED",
+    "Authorization",
+    "required from",
+    "Victor Sterling",
+    "Project Blackbox",
+    "Olivia Reed",
+    "Meeting scheduled",
+    "4:30 PM",
+    "— INTERNAL ONLY"
+];
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+let S = {
+    screen:"open",
+    team:"",
+    level:0,
+    score:0,
+
+    totalSeconds:1800,
+    remain:1800,
+
+    /*
+      Instead of calculating directly from Date.now() while paused,
+      we maintain elapsed active time.
+    */
+    lastTick:0,
+    activeElapsed:0,
+    paused:false,
+
+    hints:3,
+
+    evidence:[],
+    found:[],
+
+    sel:"",
+    wrong:0,
+
+    q1:"",
+    q2:"",
+    q3:"",
+
+    pieces:[],
+    feedback:""
+};
+
+/* =========================================================
+   UTILITY FUNCTIONS
+========================================================= */
+
+function esc(x){
+    return String(x).replace(/[&<>]/g,a=>({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;"
+    }[a]));
+}
+
+function addEvidence(items){
+    items.forEach(item=>{
+        if(!S.evidence.includes(item)){
+            S.evidence.push(item);
+        }
+    });
+}
+
+/* =========================================================
+   OPEN / SETUP
+========================================================= */
+
+function open(){
+    document.getElementById("app").innerHTML = `
+    <div class="hero">
+        <div class="brand">GERMANE MEDIA LLC PRESENTS</div>
+
+        <h1>
+            THE BLACKBOX<br>
+            INCIDENT
+        </h1>
+
+        <h2>CORPORATE CRIME MYSTERY</h2>
+
+        <p>
+            Six suspects. One missing project file.
+            Seven minutes of darkness. One person is lying.
+        </p>
+
+        <p>
+            Investigate the evidence, challenge the alibis,
+            reconstruct the document and identify the culprit.
+        </p>
+
+        <button class="cta" onclick="setup()">
+            START INVESTIGATION
+        </button>
+    </div>`;
+}
 
 function setup(){
-document.getElementById("app").innerHTML=`
-<div class="hero"><div class="card setup">
-<div class="logo">PLAYER SETUP</div><h2>What should we call your team?</h2>
-<input id="teamName" maxlength="30" placeholder="e.g. Team Chai Champions">
-<button class="btn" onclick="begin()">LET'S GO 🎮</button>
-</div></div>`}
+    document.getElementById("app").innerHTML = `
+    <div class="hero">
+        <div class="brand">CASE FILE // INITIALIZE</div>
 
-function begin(){
-state.team=(document.getElementById("teamName").value.trim()||"Team Chai Champions");
-state.screen="game";state.level=0;state.score=0;state.selected=null;state.wrong=0;state.feedback="";
-render();
+        <h2 style="font-size:30px;letter-spacing:1px">
+            ENTER YOUR TEAM
+        </h2>
+
+        <div class="setup">
+
+            <label>TEAM NAME</label>
+
+            <input
+                id="team"
+                placeholder="e.g. Team Sherlock"
+                maxlength="28"
+            >
+
+            <p style="font-size:12px;color:#777">
+                Designed for teams of 5.
+                One person controls the shared screen.
+            </p>
+
+            <button class="cta" onclick="start()">
+                BEGIN CASE
+            </button>
+        </div>
+    </div>`;
 }
+
+function start(){
+    const input = document.getElementById("team");
+
+    S.team = input && input.value.trim()
+        ? input.value.trim()
+        : "Team Sherlock";
+
+    S.lastTick = Date.now();
+    S.activeElapsed = 0;
+    S.remain = S.totalSeconds;
+    S.screen = "game";
+
+    render();
+    clock();
+}
+
+/* =========================================================
+   TIMER
+========================================================= */
+
+function clock(){
+
+    if(S.screen !== "game"){
+        return;
+    }
+
+    const now = Date.now();
+
+    if(!S.paused){
+
+        const delta = Math.floor((now - S.lastTick) / 1000);
+
+        if(delta > 0){
+            S.activeElapsed += delta;
+            S.lastTick = now;
+        }
+
+        S.remain = Math.max(
+            0,
+            S.totalSeconds - S.activeElapsed
+        );
+    }else{
+        /*
+          While paused we continuously reset lastTick.
+          Therefore paused time is never added.
+        */
+        S.lastTick = now;
+    }
+
+    if(S.remain === 0){
+
+        S.level = 5;
+        S.feedback =
+            "TIME'S UP — make your final accusation.";
+
+        render();
+        return;
+    }
+
+    updateTimer();
+
+    setTimeout(clock,1000);
+}
+
+function togglePause(){
+
+    if(S.paused){
+
+        /*
+          Resume:
+          start counting from the current moment.
+        */
+        S.lastTick = Date.now();
+        S.paused = false;
+
+    }else{
+
+        /*
+          Before pausing, capture all active time up to now.
+        */
+        const now = Date.now();
+        const delta = Math.floor(
+            (now - S.lastTick) / 1000
+        );
+
+        if(delta > 0){
+            S.activeElapsed += delta;
+        }
+
+        S.remain = Math.max(
+            0,
+            S.totalSeconds - S.activeElapsed
+        );
+
+        S.lastTick = now;
+        S.paused = true;
+    }
+
+    render();
+}
+
+function updateTimer(){
+
+    const e = document.getElementById("timer");
+
+    if(!e) return;
+
+    let m = Math.floor(S.remain / 60);
+    let s = S.remain % 60;
+
+    e.textContent =
+        String(m).padStart(2,"0") +
+        ":" +
+        String(s).padStart(2,"0");
+
+    e.className =
+        "timer " +
+        (S.remain < 600 ? "urgent" : "");
+}
+
+/* =========================================================
+   MAIN SHELL
+========================================================= */
 
 function shell(){
-return `<div class="top"><div><div class="logo">GERMANE MEDIA • OFFICE CHAOS</div><b>${state.team}</b></div><div class="badge">⭐ ${state.score} points</div></div>
-<div class="grid"><aside class="sidebar"><b>YOUR JOURNEY</b><div class="levels">${levels.map((x,i)=>`<button class="lvl ${i===state.level?"active":""} ${i<state.level?"done":""}" ${i<=state.level?`onclick="jump(${i})"`:"disabled"}>${i<state.level?"✓":i+1}. ${x.title}</button>`).join("")}</div><div class="score">${state.score}<small style="font-size:13px;color:#657187"> points</small></div></aside><main class="main">${level()}</main></div>`}
+
+    return `
+    <div class="top">
+
+        <div>
+            <div class="brand">
+                GERMANE MEDIA LLC PRESENTS
+            </div>
+
+            <div style="font-size:12px;color:#777">
+                ${esc(S.team)} // INVESTIGATION
+            </div>
+        </div>
+
+        <div>
+
+            <button class="tiny" onclick="togglePause()">
+                ${S.paused ? "RESUME" : "PAUSE"}
+            </button>
+
+            <button class="tiny" onclick="evidence()">
+                EVIDENCE
+            </button>
+
+            <span id="timer" class="timer">
+                30:00
+            </span>
+
+        </div>
+    </div>
+
+    <div class="grid">
+
+        <aside class="side">
+
+            <div class="section">
+                CASE PROGRESS
+            </div>
+
+            <div class="levels">
+
+                ${names.map((n,i)=>`
+
+                    <button
+                        class="lvl
+                        ${i===S.level ? "active" : ""}
+                        ${i<S.level ? "done" : ""}"
+                        ${i<S.level
+                            ? `onclick="S.level=${i};S.feedback='';S.sel='';render()"`
+                            : "disabled"}
+                    >
+                        ${String(i+1).padStart(2,"0")}
+                        — ${n}
+                    </button>
+
+                `).join("")}
+
+            </div>
+
+            <div class="score">
+
+                <div class="section">
+                    LIVE SCORE
+                </div>
+
+                ${S.score}
+
+            </div>
+
+            <button
+                class="tiny"
+                style="width:100%"
+                onclick="chars()"
+            >
+                CHARACTERS
+            </button>
+
+        </aside>
+
+        <main>
+            ${level()}
+        </main>
+
+        <aside class="right">
+
+            <div class="section">
+                EVIDENCE INVENTORY
+            </div>
+
+            ${
+                S.evidence.length
+                ?
+                S.evidence.map(x=>`
+                    <div class="ev">
+                        ${esc(x)}
+                    </div>
+                `).join("")
+                :
+                "<p style='color:#555;font-size:11px'>No evidence collected yet.</p>"
+            }
+
+            <div
+                class="section"
+                style="margin-top:18px"
+            >
+                HINTS
+            </div>
+
+            <p style="font-size:11px;color:#888">
+                3 total • 50 points each
+            </p>
+
+            <button
+                class="tiny"
+                onclick="hint()"
+                ${S.hints===0 ? "disabled" : ""}
+            >
+                USE HINT (${S.hints})
+            </button>
+
+        </aside>
+
+    </div>`;
+}
+
+/* =========================================================
+   LEVEL HEADER
+========================================================= */
+
+function head(n,t,b){
+
+    return `
+    <div class="head">
+
+        <div>
+
+            <div class="no">
+                CASE FILE ${String(n).padStart(2,"0")}
+            </div>
+
+            <div class="title">
+                ${t}
+            </div>
+
+        </div>
+
+        <div style="font-size:10px;color:#666">
+            30 MIN INVESTIGATION
+        </div>
+
+    </div>
+
+    <div class="brief">
+        ${b}
+    </div>`;
+}
+
+/* =========================================================
+   LEVEL ROUTER
+========================================================= */
 
 function level(){
-let l=levels[state.level];
-return `<div class="card"><div class="logo">LEVEL ${state.level+1} OF 10</div><h1 class="title">${l.title}</h1><p class="sub">${l.intro}</p><div class="progress"><div style="width:${state.level*10}%"></div></div>
-<div class="scene">${l.emoji.map((e,i)=>`<button class="tile" onclick="inspect(${i})">${e}<span>${l.labels[i]}</span></button>`).join("")}</div>
-<div class="question"><h2>${l.question}</h2><div class="options">${l.options.map((o,i)=>`<button class="option" onclick="choose(${i})">${o}</button>`).join("")}</div>
-${state.feedback?`<div class="${state.feedback.startsWith("Correct")?"success":"feedback"}">${state.feedback}</div>`:""}
-${state.selected!==null?`<button class="btn" onclick="submitAnswer()">LOCK ANSWER 🔒</button>`:""}</div></div>`}
+
+    if(S.level===0) return l1();
+    if(S.level===1) return l2();
+    if(S.level===2) return l3();
+    if(S.level===3) return l4();
+    if(S.level===4) return l5();
+
+    return l6();
+}
+
+/* =========================================================
+   LEVEL 1
+========================================================= */
+
+function l1(){
+
+    let o = [
+        ["DIGITAL CLOCK","4:17 PM"],
+        ["ACCESS CARD","Registered near security room at 4:14 PM."],
+        ["LAPTOP","Display connection logged shortly before incident."],
+        ["COFFEE MUG","Still warm."],
+        ["TORN DOCUMENT","“If they discover the transfer, everything is over.”"]
+    ];
+
+    return `
+    <div class="panel">
+
+        ${head(
+            1,
+            "THE CRIME SCENE",
+            "Inspect all five suspicious objects. Then determine the most likely incident time."
+        )}
+
+        <div class="scene">
+
+            <div class="desk"></div>
+
+            ${o.map((x,i)=>`
+
+                <button
+                    class="obj o${i+1}"
+                    onclick="inspect(${i})"
+                >
+                    ${x[0]}
+                </button>
+
+            `).join("")}
+
+        </div>
+
+        <p>
+            ${
+                S.found.map(i=>`
+                    <span
+                        class="ev"
+                        style="display:inline-block"
+                    >
+                        ✓ ${o[i][0]}
+                    </span>
+                `).join("")
+            }
+        </p>
+
+        ${
+            S.feedback
+            ?
+            `<div class="feedback">${S.feedback}</div>`
+            :
+            ""
+        }
+
+        <div class="q">
+
+            <h3>
+                When did the incident most likely occur?
+            </h3>
+
+            <div class="answers">
+
+                ${
+                    ["4:09 PM","4:14 PM","4:17 PM","4:24 PM"]
+                    .map(x=>`
+
+                        <button
+                            class="ans ${S.sel===x ? "sel" : ""}"
+                            onclick="S.sel='${x}';render()"
+                        >
+                            ${x}
+                        </button>
+
+                    `).join("")
+                }
+
+            </div>
+
+            <button
+                class="cta"
+                onclick="answer(0,S.sel==='4:17 PM')"
+            >
+                SUBMIT DEDUCTION
+            </button>
+
+        </div>
+
+    </div>`;
+}
 
 function inspect(i){
-state.feedback=["Good observation!","This clue looks suspicious.","Classic office evidence.","Someone definitely knows something.","Interesting... add this to your mental evidence board.","Very relatable clue."][i];
-render();
+
+    if(!S.found.includes(i)){
+        S.found.push(i);
+        addEvidence([E[0][i]]);
+    }
+
+    S.feedback = [
+        "The clock stopped at 4:17 PM.",
+        "The access card was registered near the security room at 4:14 PM.",
+        "The display connection forms part of the digital trail.",
+        "The warm coffee suggests someone was present shortly before the incident.",
+        "The torn sentence points toward a hidden transfer."
+    ][i];
+
+    render();
 }
-function choose(i){state.selected=i;render()}
-function submitAnswer(){
-let l=levels[state.level];
-if(state.selected===l.correct){
-state.score+=100;state.feedback=l.win;
-setTimeout(()=>{
-if(state.level===9){state.finished=true;state.screen="finish";render()}
-else{state.level++;state.selected=null;state.wrong=0;state.feedback="";render()}
-},900);
-}else{
-state.wrong++;
-if(state.level===9){
-state.feedback=state.wrong===1?"😡 WRONG ANSWER! Are you seriously choosing someone else?":"😤 Do you really think I am not good?";
-}else{
-state.feedback=state.wrong===1?"😅 Not quite! Try again.":"😂 Still wrong! Think like an Indian office survivor.";
+
+/* =========================================================
+   LEVEL 2
+========================================================= */
+
+function l2(){
+
+    return `
+    <div class="panel">
+
+        ${head(
+            2,
+            "THE RIDDLE FILE",
+            "Solve the riddle to unlock the security log."
+        )}
+
+        <div class="riddle">
+
+            I leave a record without making a sound.<br>
+            I show the path you took without following you.<br><br>
+
+            Investigators find me on the ground
+            after someone has passed by.<br><br>
+
+            <b>What am I?</b>
+
+        </div>
+
+        <div class="q">
+
+            <div class="answers">
+
+                ${
+                    [
+                        "A shadow",
+                        "A footprint",
+                        "A calendar",
+                        "A password"
+                    ].map(x=>`
+
+                        <button
+                            class="ans ${S.sel===x ? "sel" : ""}"
+                            onclick="S.sel='${x}';render()"
+                        >
+                            ${x}
+                        </button>
+
+                    `).join("")
+                }
+
+            </div>
+
+            <button
+                class="cta"
+                onclick="answer(1,S.sel==='A footprint')"
+            >
+                UNLOCK FILE
+            </button>
+
+        </div>
+
+        ${
+            S.feedback
+            ?
+            `<div class="feedback">${S.feedback}</div>`
+            :
+            ""
+        }
+
+    </div>`;
 }
-render();
-}}
-function jump(i){if(i<=state.level){state.level=i;state.selected=null;state.feedback="";render()}}
-function finish(){
-document.getElementById("app").innerHTML=`<div class="hero"><div class="card"><div class="logo">CASE CLOSED</div><h1 class="title">YOU SURVIVED OFFICE CHAOS! 🏆</h1><p class="sub">${state.team}, your final score is:</p><div class="score">${state.score} points</div><h2>And yes... Tarang Srivastava is the best HR. 👑</h2><p class="sub">Thank you for playing. Now go have chai and discuss who got the highest score.</p><button class="btn" onclick="location.reload()">PLAY AGAIN 🔄</button></div></div>`}
-function render(){if(state.screen==="home")home();else if(state.screen==="setup")setup();else if(state.screen==="finish")finish();else document.getElementById("app").innerHTML=shell()}
-home();
+
+/* =========================================================
+   LEVEL 3
+========================================================= */
+
+function l3(){
+
+    return `
+    <div class="panel">
+
+        ${head(
+            3,
+            "CRACK THE CODE",
+            "Use the security log to derive the four-digit security code."
+        )}
+
+        <div class="terminal">
+
+            SECURITY KEYPAD<br><br>
+
+            FIRST DIGIT = people inside the investigation area<br>
+            SECOND DIGIT = minutes security was disabled<br>
+            THIRD DIGIT = suspicious access attempts<br>
+            FOURTH DIGIT = stopped clock minute display<br><br>
+
+            SECURITY LOG<br>
+            ----------------------------<br>
+            People inside: 6<br>
+            Security disabled: 7 minutes<br>
+            Suspicious access attempts: 4<br>
+            Clock stopped: 4:17 PM
+
+        </div>
+
+        <div class="rule">
+            The four numbers are already present in the evidence.
+            Read them in the order shown above.
+        </div>
+
+        <input
+            id="code"
+            class="code"
+            maxlength="4"
+            inputmode="numeric"
+            placeholder="____"
+        >
+
+        <button
+            class="cta"
+            style="display:block;margin:auto"
+            onclick="
+                answer(
+                    2,
+                    document.getElementById('code').value==='6747'
+                )
+            "
+        >
+            VERIFY CODE
+        </button>
+
+        ${
+            S.feedback
+            ?
+            `<div class="feedback">${S.feedback}</div>`
+            :
+            ""
+        }
+
+    </div>`;
+}
+
+/* =========================================================
+   LEVEL 4
+========================================================= */
+
+function l4(){
+
+    return `
+    <div class="panel">
+
+        ${head(
+            4,
+            "ASSEMBLE THE EVIDENCE",
+            "Select the ten fragments in the correct order to reconstruct the torn document."
+        )}
+
+        <div class="rule">
+            <b>Document clues:</b><br>
+            1. The document begins with its subject.<br>
+            2. An approval follows the subject.<br>
+            3. Authorization comes next.<br>
+            4. The authorization is required from a named person.<br>
+            5. The project is then identified.<br>
+            6. The recipient follows the project name.<br>
+            7. The meeting details appear at the end.
+        </div>
+
+        <div class="pieces">
+
+            ${
+                P.map((x,i)=>`
+
+                    <button
+                        class="piece ${S.pieces.includes(i) ? "sel" : ""}"
+                        onclick="piece(${i})"
+                    >
+                        ${i+1}. ${x}
+                    </button>
+
+                `).join("")
+            }
+
+        </div>
+
+        <div class="assembled">
+
+            ${
+                S.pieces.map(i=>P[i]).join(" ")
+                ||
+                "Selected fragments will appear here in sequence."
+            }
+
+        </div>
+
+        <button
+            class="cta"
+            onclick="
+                answer(
+                    3,
+                    JSON.stringify(S.pieces) ===
+                    JSON.stringify([0,1,2,3,4,5,6,7,8,9])
+                )
+            "
+        >
+            ASSEMBLE DOCUMENT
+        </button>
+
+        ${
+            S.feedback
+            ?
+            `<div class="feedback">${S.feedback}</div>`
+            :
+            ""
+        }
+
+    </div>`;
+}
+
+function piece(i){
+
+    let p = S.pieces.indexOf(i);
+
+    if(p >= 0){
+        S.pieces.splice(p,1);
+    }else{
+        S.pieces.push(i);
+    }
+
+    render();
+}
+
+/* =========================================================
+   LEVEL 5
+========================================================= */
+
+function l5(){
+
+    return `
+    <div class="panel">
+
+        ${head(
+            5,
+            "THE ALIBI GAME",
+            "Compare the six suspect files and identify the two alibis that cannot be trusted."
+        )}
+
+        <div class="suspects">
+
+            ${C.map(c=>`
+
+                <div class="sus">
+
+                    <div class="ava">
+                        ${c[2]}
+                    </div>
+
+                    <b>${c[0]}</b>
+
+                    <small>
+                        ${c[1]}
+                    </small>
+
+                    <p style="font-size:11px;color:#aaa">
+                        <b>Alibi:</b> ${c[3]}
+                    </p>
+
+                    <p style="font-size:11px;color:#c8ae77">
+                        <b>Suspicious:</b> ${c[4]}
+                    </p>
+
+                </div>
+
+            `).join("")}
+
+        </div>
+
+        <div class="rule">
+
+            <b>Timeline cross-check:</b><br><br>
+
+            • Alex's recording disappears from 4:13–4:19 PM.<br>
+            • Olivia's scheduled meeting loses its attendee at 4:11 PM.<br>
+            • No second attendee was recorded for Olivia's meeting.<br>
+            • Daniel's call ended at 4:09 PM, so his original claim is
+              shortened but not impossible.<br>
+            • Ryan's security-card use requires further investigation,
+              but his server log places him elsewhere.
+
+        </div>
+
+        <div class="q">
+
+            <h3>
+                Which TWO alibis are definitely unreliable?
+            </h3>
+
+            <div class="answers">
+
+                ${
+                    [
+                        "Alex + Maya",
+                        "Alex + Olivia",
+                        "Ryan + Daniel",
+                        "Sophie + Olivia"
+                    ].map(x=>`
+
+                        <button
+                            class="ans ${S.sel===x ? "sel" : ""}"
+                            onclick="S.sel='${x}';render()"
+                        >
+                            ${x}
+                        </button>
+
+                    `).join("")
+                }
+
+            </div>
+
+            <button
+                class="cta"
+                onclick="answer(4,S.sel==='Alex + Olivia')"
+            >
+                LOCK TIMELINE
+            </button>
+
+        </div>
+
+        ${
+            S.feedback
+            ?
+            `<div class="feedback">${S.feedback}</div>`
+            :
+            ""
+        }
+
+    </div>`;
+}
+
+/* =========================================================
+   LEVEL 6
+========================================================= */
+
+function l6(){
+
+    return `
+    <div class="panel">
+
+        ${head(
+            6,
+            "THE FINAL ACCUSATION",
+            "Use everything you have learned. Answer all three questions."
+        )}
+
+        <div class="q">
+
+            <h3>
+                1. Who committed the crime?
+            </h3>
+
+            <div class="answers">
+
+                ${
+                    C.map(c=>`
+
+                        <button
+                            class="ans ${S.q1===c[0] ? "sel" : ""}"
+                            onclick="S.q1='${c[0]}';render()"
+                        >
+                            ${c[0]}
+                        </button>
+
+                    `).join("")
+                }
+
+            </div>
+
+        </div>
+
+        <div class="q">
+
+            <h3>
+                2. Why?
+            </h3>
+
+            <div class="answers">
+
+                ${
+                    [
+                        ["A","Revenge"],
+                        ["B","Steal money"],
+                        [
+                            "C",
+                            "Obtain evidence to protect herself from being blamed for Victor's actions"
+                        ],
+                        ["D","Destroy the company"]
+                    ].map(x=>`
+
+                        <button
+                            class="ans ${S.q2===x[0] ? "sel" : ""}"
+                            onclick="S.q2='${x[0]}';render()"
+                        >
+                            ${x[0]}. ${x[1]}
+                        </button>
+
+                    `).join("")
+                }
+
+            </div>
+
+        </div>
+
+        <div class="q">
+
+            <h3>
+                3. How?
+            </h3>
+
+            <div class="answers">
+
+                ${
+                    [
+                        [
+                            "A",
+                            "Disable security → enter → take document → confrontation → leave"
+                        ],
+                        [
+                            "B",
+                            "Steal card → hack server → destroy evidence → leave"
+                        ],
+                        [
+                            "C",
+                            "Confront Victor → steal money → disable CCTV → leave"
+                        ]
+                    ].map(x=>`
+
+                        <button
+                            class="ans ${S.q3===x[0] ? "sel" : ""}"
+                            onclick="S.q3='${x[0]}';render()"
+                        >
+                            ${x[0]}. ${x[1]}
+                        </button>
+
+                    `).join("")
+                }
+
+            </div>
+
+        </div>
+
+        <button
+            class="cta"
+            onclick="final()"
+        >
+            SUBMIT FINAL ACCUSATION
+        </button>
+
+        ${
+            S.feedback
+            ?
+            `<div class="feedback">${S.feedback}</div>`
+            :
+            ""
+        }
+
+    </div>`;
+}
+
+/* =========================================================
+   ANSWER HANDLING
+========================================================= */
+
+function answer(l,ok){
+
+    const base = [100,150,200,200,250,300][l];
+
+    if(ok){
+
+        S.score +=
+            base +
+            (S.wrong===0 && l<5 ? 25 : 0);
+
+        addEvidence(E[l]);
+
+        S.feedback =
+            "✓ CORRECT — evidence secured.";
+
+        setTimeout(()=>{
+
+            S.level = Math.min(5,l+1);
+
+            S.sel = "";
+            S.wrong = 0;
+            S.feedback = "";
+
+            render();
+
+        },700);
+
+    }else{
+
+        S.wrong++;
+
+        S.score = Math.max(
+            0,
+            S.score - (S.wrong===1 ? 25 : 50)
+        );
+
+        if(l===0){
+
+            S.feedback =
+                "✕ Incorrect. Compare the stopped clock with the other timestamps.";
+
+        }else if(l===1){
+
+            S.feedback =
+                "✕ Incorrect. The answer leaves a physical trail of where someone has been.";
+
+        }else if(l===2){
+
+            S.feedback =
+                "✕ Incorrect. Read the four security-log numbers in order.";
+
+        }else if(l===3){
+
+            S.feedback =
+                "✕ Incorrect. Use the document clues to determine the sequence.";
+
+        }else if(l===4){
+
+            S.feedback =
+                "✕ Incorrect. Compare the exact alibi windows against the timeline.";
+
+        }
+
+        render();
+    }
+}
+
+/* =========================================================
+   FINAL ACCUSATION
+========================================================= */
+
+function final(){
+
+    if(
+        S.q1 === "Olivia Reed" &&
+        S.q2 === "C" &&
+        S.q3 === "A"
+    ){
+
+        S.score += 200;
+        S.screen = "reveal";
+
+        render();
+
+    }else{
+
+        S.score = Math.max(
+            0,
+            S.score - 50
+        );
+
+        S.feedback =
+            "The accusation does not fit every clue. Revisit the evidence board.";
+
+        render();
+    }
+}
+
+/* =========================================================
+   FINAL REVEAL
+========================================================= */
+
+function reveal(){
+
+    let rank =
+        S.score >= 1200
+        ? "S-RANK — MASTER DETECTIVES"
+        : S.score >= 950
+        ? "A-RANK — ELITE INVESTIGATORS"
+        : S.score >= 700
+        ? "B-RANK — SOLID DETECTIVES"
+        : S.score >= 450
+        ? "C-RANK — ROOKIE DETECTIVES"
+        : "D-RANK — THE SUSPECTS WERE RIGHT";
+
+    return `
+    <div class="panel final">
+
+        <div class="stamp">
+            CASE CLOSED
+        </div>
+
+        <div
+            style="
+                color:#999;
+                letter-spacing:3px;
+                margin-top:25px
+            "
+        >
+            THE CULPRIT WAS...
+        </div>
+
+        <div class="reveal">
+            OLIVIA REED
+        </div>
+
+        <p
+            style="
+                max-width:720px;
+                color:#aaa;
+                line-height:1.7
+            "
+        >
+            Olivia discovered that Victor Sterling had secretly
+            manipulated an internal project and planned to blame
+            her department if it failed.
+
+            She wanted the document proving what had happened.
+
+            She used the security outage as a window to enter the
+            conference room, took Project Blackbox and confronted
+            Victor.
+
+            Victor became unconscious during the confrontation.
+            Olivia then left the conference area before security
+            was restored.
+        </p>
+
+        <div class="timeline">
+
+            ${
+                [
+                    ["4:09 PM","Daniel's client call ends."],
+                    ["4:12 PM","Server access is recorded."],
+                    ["4:14 PM","Security room access is recorded."],
+                    ["4:17 PM","Security system is disabled."],
+                    ["4:18 PM","Olivia enters the conference room."],
+                    ["4:20 PM","Project Blackbox is removed."],
+                    ["4:22 PM","Victor confronts Olivia."],
+                    ["4:23 PM","Olivia leaves the conference area."],
+                    ["4:24 PM","Security system is restored."]
+                ].map(x=>`
+
+                    <div class="time">
+
+                        <b>${x[0]}</b>
+
+                        <span>${x[1]}</span>
+
+                    </div>
+
+                `).join("")
+            }
+
+        </div>
+
+        <h2>
+            FINAL SCORE: ${S.score}
+        </h2>
+
+        <div style="letter-spacing:3px">
+            ${rank}
+        </div>
+
+        <button
+            class="cta"
+            onclick="location.reload()"
+        >
+            NEW GAME
+        </button>
+
+    </div>`;
+}
+
+/* =========================================================
+   EVIDENCE MODAL
+========================================================= */
+
+function evidence(){
+
+    document.body.insertAdjacentHTML(
+        "beforeend",
+        `
+        <div class="modal" id="modal">
+
+            <div class="modalbox">
+
+                <button
+                    class="close"
+                    onclick="document.getElementById('modal').remove()"
+                >
+                    ×
+                </button>
+
+                <div class="section">
+                    EVIDENCE BOARD
+                </div>
+
+                <h2>
+                    CASE CONNECTIONS
+                </h2>
+
+                ${
+                    S.evidence.map((e,i)=>`
+
+                        <div class="ev">
+                            EVIDENCE
+                            ${String(i+1).padStart(2,"0")}
+                            — ${esc(e)}
+                        </div>
+
+                    `).join("")
+                    ||
+                    "<p>No evidence yet.</p>"
+                }
+
+            </div>
+
+        </div>
+        `
+    );
+}
+
+/* =========================================================
+   CHARACTER MODAL
+========================================================= */
+
+function chars(){
+
+    document.body.insertAdjacentHTML(
+        "beforeend",
+        `
+        <div class="modal" id="modal">
+
+            <div class="modalbox">
+
+                <button
+                    class="close"
+                    onclick="document.getElementById('modal').remove()"
+                >
+                    ×
+                </button>
+
+                <div class="section">
+                    SUSPECT FILES
+                </div>
+
+                ${
+                    C.map(c=>`
+
+                        <div
+                            style="
+                                padding:13px 0;
+                                border-bottom:1px solid #292621
+                            "
+                        >
+
+                            <div class="ava">
+                                ${c[2]}
+                            </div>
+
+                            <b>${c[0]}</b>
+
+                            <small style="color:#777">
+                                ${c[1]}
+                            </small>
+
+                            <p
+                                style="
+                                    font-size:11px;
+                                    color:#aaa
+                                "
+                            >
+                                <b>Alibi:</b>
+                                ${c[3]}<br><br>
+
+                                <b>Suspicious:</b>
+                                ${c[4]}<br><br>
+
+                                <b>Possible motive:</b>
+                                ${c[5]}
+                            </p>
+
+                        </div>
+
+                    `).join("")
+                }
+
+            </div>
+
+        </div>
+        `
+    );
+}
+
+/* =========================================================
+   LEVEL-SPECIFIC HINTS
+========================================================= */
+
+function hint(){
+
+    if(S.hints <= 0){
+        return;
+    }
+
+    S.hints--;
+
+    S.score = Math.max(
+        0,
+        S.score - 50
+    );
+
+    const hints = [
+
+        "The stopped clock is your strongest direct timestamp. Inspect the digital clock first.",
+
+        "The riddle describes a physical trace left on the ground by a person.",
+
+        "The code is not a guess. The security log explicitly provides 6, 7, 4 and 17 → use the minute display as 7.",
+
+        "The document starts with its subject and ends with its meeting details. Follow the document clues.",
+
+        "Alex has a 6-minute recording gap. Olivia's meeting attendee left at 4:11 PM and no replacement attendee was recorded.",
+
+        "The evidence points to Olivia: motive, opportunity, the document, the security window and the final confrontation."
+    ];
+
+    S.feedback = hints[S.level] || hints[0];
+
+    render();
+}
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+open();
+
 </script>
 </body>
 </html>
-"""
-components.html(HTML, height=2400, scrolling=False)
+'''
+
+components.html(
+    HTML,
+    height=2200,
+    scrolling=False
+)

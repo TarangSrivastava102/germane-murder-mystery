@@ -446,7 +446,19 @@ HTML_GAME = """
 
     <!-- MAIN STAGE -->
     <div class="stage-area" id="stage">
-        <!-- Dynamic content rendered by JS -->
+        <!-- Static fallback start screen. JS replaces this after loading. -->
+        <h1>🇮🇳 GERMANE MEDIA LLC PRESENTS</h1>
+        <h2 style="font-size:32px; color:#ffd700;">THE GREAT INDIAN OFFICE CHAOS</h2>
+        <p style="font-size:16px; font-weight:700; color:#ff007f;">"Can you survive a normal Friday in India?"</p>
+        <div style="background:rgba(0,0,0,0.4); padding:15px; border-radius:12px; margin:15px 0; max-width:500px;">
+            <p>⏱️ <strong>30 MINUTES</strong> | 🧩 <strong>10 LEVELS</strong> | 👥 <strong>5 PLAYERS</strong></p>
+            <p style="font-size:12px; color:#aaa;">🚨 ALERT! It's Friday. Workday traffic, WhatsApp forwards, UPI PINs, WFH drama, and Bollywood chaos await!</p>
+        </div>
+        <div style="margin-bottom:15px;">
+            <label style="font-size:12px; font-weight:700;">ENTER TEAM NAME:</label><br>
+            <input type="text" id="team-input" value="THE JUGAADUS" style="padding:10px; border-radius:8px; border:2px solid #ffd700; background:#110d29; color:#fff; font-weight:700; text-align:center; font-size:16px;">
+        </div>
+        <button class="btn-main" onclick="startGame()">START THE CHAOS 🚀</button>
     </div>
 
     <!-- LEVEL TRACKER -->
@@ -652,12 +664,9 @@ HTML_GAME = """
         bollyCorrect = 0;
         jugaadCorrect = 0;
 
-        document.getElementById('timer-display').innerText = "⏱️ 30:00";
-        document.getElementById('display-team').innerText = "TEAM: READY TO SURVIVE";
-        document.getElementById('hint-btn').innerText = "💡 HINT (3)";
-        document.getElementById('alert-zone').innerHTML = '';
-        updateHUD();
-        let stage = document.getElementById('stage');
+        const stage = document.getElementById('stage');
+        if (!stage) return;
+
         stage.innerHTML = `
             <h1>🇮🇳 GERMANE MEDIA LLC PRESENTS</h1>
             <h2 style="font-size:32px; color:#ffd700;">THE GREAT INDIAN OFFICE CHAOS</h2>
@@ -672,6 +681,13 @@ HTML_GAME = """
             </div>
             <button class="btn-main" onclick="startGame()">START THE CHAOS 🚀</button>
         `;
+
+        // HUD is updated after the stage is rendered.
+        document.getElementById('timer-display').innerText = "⏱️ 30:00";
+        document.getElementById('display-team').innerText = "TEAM: READY TO SURVIVE";
+        document.getElementById('hint-btn').innerText = "💡 HINT (3)";
+        document.getElementById('alert-zone').innerHTML = '';
+        updateHUD();
     }
 
     function startGame() {
@@ -1228,7 +1244,11 @@ HTML_GAME = """
     }
 
     // INITIALIZE ON LOAD
-    renderStartScreen();
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderStartScreen);
+    } else {
+        renderStartScreen();
+    }
 </script>
 </body>
 </html>

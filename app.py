@@ -26,7 +26,7 @@ button,input,select{font:inherit}button{cursor:pointer}
 .timer{font:900 27px monospace;color:var(--g)}
 .timer.urgent{color:#e05a5a}
 .tiny{background:#101010;border:1px solid #3b3730;color:#c6c0b5;padding:10px 13px;font-size:11px;letter-spacing:1px}
-.hero{min-height:88vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
+.hero{min-height:760px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
 .hero h1{font:normal 82px/.9 Georgia,serif;letter-spacing:2px;margin:18px 0}
 .hero h2{letter-spacing:5px;font-size:14px;color:#c8bfae}
 .hero p{max-width:720px;color:var(--m);line-height:1.7}
@@ -37,7 +37,7 @@ button,input,select{font:inherit}button{cursor:pointer}
 .rules,.note{margin:16px 0;padding:13px;background:#0b0b0b;border-left:2px solid #705b37;color:#aaa;font-size:12px;line-height:1.6}
 .grid{display:grid;grid-template-columns:215px minmax(0,1fr) 245px;gap:15px;margin-top:16px}
 .side,.right,.panel{background:linear-gradient(150deg,#151515,#0d0d0d);border:1px solid var(--l)}
-.side,.right{padding:15px}.side{min-height:700px}.panel{padding:25px;min-height:700px}
+.side,.right{padding:15px}.side{min-height:680px}.panel{padding:25px;min-height:680px}
 .section{font-size:10px;letter-spacing:2px;color:#777;font-weight:bold}
 .levels{display:grid;gap:6px;margin-top:13px}
 .lvl{background:#101010;border:1px solid #302d28;color:#888;padding:10px;text-align:left;font-size:11px}
@@ -423,4 +423,4 @@ open();
 </html>
 '''
 
-components.html(HTML, height=2500, scrolling=True)
+components.html(HTML, height=900, scrolling=True)

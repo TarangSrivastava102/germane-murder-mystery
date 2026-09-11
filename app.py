@@ -466,6 +466,11 @@ HTML_GAME = """
     let teamName = "THE JUGAADUS";
     let chaosLevel = 10;
     let tarangWrongAttempts = 0;
+    let waCorrect = 0;
+    let level5Correct = 0;
+    let wfhCorrect = 0;
+    let bollyCorrect = 0;
+    let jugaadCorrect = 0;
 
     // WEB AUDIO SYNTHESIZER
     const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -566,7 +571,7 @@ HTML_GAME = """
                 let mins = Math.floor(timerSeconds / 60);
                 let secs = timerSeconds % 60;
                 document.getElementById('timer-display').innerText = `⏱️ ${String(mins).padStart(2,'0')}:${String(secs).padStart(2,'0')}`;
-                
+
                 let alertZone = document.getElementById('alert-zone');
                 if (timerSeconds === 300) {
                     alertZone.innerHTML = '<div class="alert-banner">⚠️ CHAOS LEVEL: HIGH! 5 MINUTES REMAINING!</div>';
@@ -576,6 +581,8 @@ HTML_GAME = """
                     playSound('beep');
                 } else if (timerSeconds === 0) {
                     alertZone.innerHTML = '<div class="alert-banner">⏰ TIME\'S UP! Complete your final answer!</div>';
+                    clearInterval(timerInterval);
+                    timerInterval = null;
                 }
             }
         }, 1000);
@@ -628,7 +635,27 @@ HTML_GAME = """
 
     // RENDER START SCREEN
     function renderStartScreen() {
+        if (timerInterval) {
+            clearInterval(timerInterval);
+            timerInterval = null;
+        }
+
+        score = 0;
         currentLevel = 0;
+        timerSeconds = 1800;
+        hintsLeft = 3;
+        tarangWrongAttempts = 0;
+        teamName = "THE JUGAADUS";
+        waCorrect = 0;
+        level5Correct = 0;
+        wfhCorrect = 0;
+        bollyCorrect = 0;
+        jugaadCorrect = 0;
+
+        document.getElementById('timer-display').innerText = "⏱️ 30:00";
+        document.getElementById('display-team').innerText = "TEAM: READY TO SURVIVE";
+        document.getElementById('hint-btn').innerText = "💡 HINT (3)";
+        document.getElementById('alert-zone').innerHTML = '';
         updateHUD();
         let stage = document.getElementById('stage');
         stage.innerHTML = `
@@ -764,6 +791,7 @@ HTML_GAME = """
         currentLevel = 3;
         updateHUD();
         waIndex = 0;
+        waCorrect = 0;
         renderWA();
     }
 
@@ -786,16 +814,18 @@ HTML_GAME = """
 
     function answerWA(idx) {
         if (idx === waQuestions[waIndex].ans) {
+            waCorrect++;
+            score += 30;
             playSound('ting');
         } else {
             playSound('beep');
         }
+        updateHUD();
         waIndex++;
         if (waIndex < waQuestions.length) {
             renderWA();
         } else {
-            score += 150;
-            showCharacterPopup('👨‍💻', 'ROHIT (Employee)', 'Bro, WhatsApp forwards are 100% factual! +150 Points!', loadLevel4);
+            showCharacterPopup('👨‍💻', 'ROHIT (Employee)', `WhatsApp University result: ${waCorrect}/5 correct! +${waCorrect * 30} Points!`, loadLevel4);
         }
     }
 
@@ -875,6 +905,7 @@ HTML_GAME = """
         currentLevel = 5;
         updateHUD();
         level5Index = 0;
+        level5Correct = 0;
         renderLevel5();
     }
 
@@ -895,16 +926,18 @@ HTML_GAME = """
 
     function answerLevel5(idx) {
         if (idx === level5Items[level5Index].ans) {
+            level5Correct++;
+            score += 30;
             playSound('ting');
         } else {
             playSound('beep');
         }
+        updateHUD();
         level5Index++;
         if (level5Index < level5Items.length) {
             renderLevel5();
         } else {
-            score += 150;
-            showCharacterPopup('👨‍🍳', 'PANTRY GUY', 'Office snacks identified with 100% accuracy! +150 Points!', loadLevel6);
+            showCharacterPopup('👨‍🍳', 'PANTRY GUY', `Office pantry score: ${level5Correct}/5 correct! +${level5Correct * 30} Points!`, loadLevel6);
         }
     }
 
@@ -922,6 +955,7 @@ HTML_GAME = """
         currentLevel = 6;
         updateHUD();
         wfhIndex = 0;
+        wfhCorrect = 0;
         renderWFH();
     }
 
@@ -938,13 +972,19 @@ HTML_GAME = """
     }
 
     function answerWFH(idx) {
-        playSound('ting');
+        if (idx === wfhScenarios[wfhIndex].ans) {
+            wfhCorrect++;
+            score += 40;
+            playSound('ting');
+        } else {
+            playSound('beep');
+        }
+        updateHUD();
         wfhIndex++;
         if (wfhIndex < wfhScenarios.length) {
             renderWFH();
         } else {
-            score += 200;
-            showCharacterPopup('🎧', 'MONU (WFH Legend)', 'Camera was off, but performance was 100%! +200 Points!', loadLevel7);
+            showCharacterPopup('🎧', 'MONU (WFH Legend)', `WFH survival score: ${wfhCorrect}/5 correct! +${wfhCorrect * 40} Points!`, loadLevel7);
         }
     }
 
@@ -962,6 +1002,7 @@ HTML_GAME = """
         currentLevel = 7;
         updateHUD();
         bollyIndex = 0;
+        bollyCorrect = 0;
         renderBolly();
     }
 
@@ -978,15 +1019,19 @@ HTML_GAME = """
     }
 
     function answerBolly(idx) {
-        if (idx === bollyQuestions[bollyIndex].ans) playSound('ting');
-        else playSound('beep');
-        
+        if (idx === bollyQuestions[bollyIndex].ans) {
+            bollyCorrect++;
+            score += 40;
+            playSound('ting');
+        } else {
+            playSound('beep');
+        }
+        updateHUD();
         bollyIndex++;
         if (bollyIndex < bollyQuestions.length) {
             renderBolly();
         } else {
-            score += 200;
-            showCharacterPopup('💃', 'BOLLYWOOD DIRECTOR', 'Wah! Kya acting hai! Absolute blockbuster! +200 Points!', loadLevel8);
+            showCharacterPopup('💃', 'BOLLYWOOD DIRECTOR', `Bollywood score: ${bollyCorrect}/5 correct! +${bollyCorrect * 40} Points!`, loadLevel8);
         }
     }
 
@@ -1042,6 +1087,7 @@ HTML_GAME = """
         currentLevel = 9;
         updateHUD();
         jugaadIndex = 0;
+        jugaadCorrect = 0;
         renderJugaad();
     }
 
@@ -1058,13 +1104,19 @@ HTML_GAME = """
     }
 
     function answerJugaad(idx) {
-        playSound('ting');
+        if (idx === jugaadProbs[jugaadIndex].ans) {
+            jugaadCorrect++;
+            score += 67;
+            playSound('ting');
+        } else {
+            playSound('beep');
+        }
+        updateHUD();
         jugaadIndex++;
         if (jugaadIndex < jugaadProbs.length) {
             renderJugaad();
         } else {
-            score += 200;
-            showCharacterPopup('💡', 'JUGAAD KING', 'Pure Indian innovation at its finest! +200 Points!', triggerLevel10Intro);
+            showCharacterPopup('💡', 'JUGAAD KING', `Jugaad score: ${jugaadCorrect}/3 correct! +${jugaadCorrect * 67} Points!`, triggerLevel10Intro);
         }
     }
 

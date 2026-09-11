@@ -218,11 +218,11 @@ function inspectScene(i){
 
 /* 2 — Contradictions */
 function l2(){
- return `<div class="panel">${head(2,"THE SUSPECT BOARD","Read the short clues and identify the suspect whose access is directly connected to the conference room.")}<div class="cards">
- ${SUSPECTS.map((s,i)=>`<button class="card ${S.sel===s.name?"ans sel":""}" onclick="S.sel='${s.name}';render()"><b>${s.name}</b><small>${s.role}<br>${s.detail}</small></button>`).join("")}</div>
- <div class="note">CLUE: The conference-room access code is <b>OR-119</b>. Which suspect has the initials OR?</div>
+ return `<div class="panel">${head(2,"THE SUSPECT BOARD","One suspect's alibi has a gap during the most important part of the timeline. Find that suspect.")}<div class="cards">
+ ${SUSPECTS.map((s,i)=>`<button class="card ${S.sel===s.name?"ans sel":""}" onclick="S.sel='${s.name}';render()"><b>${s.name}</b><small>${s.role}<br>${s.alibi}<br>${s.detail}</small></button>`).join("")}</div>
+ <div class="note">CASE WINDOW: <b>4:13 PM–4:19 PM</b>. Which suspect cannot fully account for their whereabouts during this window?</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(1,S.sel==='Olivia Reed','Look at the initials OR in the clue.')">IDENTIFY SUSPECT</button></div>`;
+ <button class="cta" onclick="check(1,S.sel==='Alex Morgan','Compare each alibi with the 4:13–4:19 window.')">IDENTIFY SUSPECT</button></div>`;
 }
 function togglePick(i){
  S.temp.picked=S.temp.picked||[];const p=S.temp.picked.indexOf(i);
@@ -267,44 +267,48 @@ function l5(){
  "4:18   OR-119   Conference room      DOOR OPEN",
  "4:20   OR-119   Conference room      FILE ACCESS"
  ].join("\n");
- return `<div class="panel">${head(5,"ACCESS LOG","One identity appears when the missing file is accessed. Match that identity to a suspect.")}<div class="terminal">${logs}</div>
- <div class="note">CLUE: OR = first letter of the first name + first letter of the last name.</div>
- <div class="q"><h3>Who is OR?</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${S.sel===s.name?"sel":""}" onclick="S.sel='${s.name}';render()">${s.name}</button>`).join("")}</div>
+ const register=[
+ ["AM-101","Alex Morgan"],["MK-107","Maya Kapoor"],["RC-204","Ryan Carter"],
+ ["SB-113","Sophie Bennett"],["DR-116","Daniel Ross"],["OR-119","Olivia Reed"]
+ ];
+ return `<div class="panel">${head(5,"ACCESS LOG","The file was accessed at 4:20 PM. Use the badge register to identify the person behind the badge code.")}<div class="terminal">${logs}</div>
+ <div class="note"><b>BADGE REGISTER</b><br>${register.map(x=>`${x[0]}  —  ${x[1]}`).join("<br>")}</div>
+ <div class="q"><h3>Who used the badge that accessed the file?</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${S.sel===s.name?"sel":""}" onclick="S.sel='${s.name}';render()">${s.name}</button>`).join("")}</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(4,S.sel==='Olivia Reed','OR means Olivia Reed.')">MATCH ACCESS</button></div></div>`;
+ <button class="cta" onclick="check(4,S.sel==='Olivia Reed','Match the badge in the 4:20 FILE ACCESS row to the badge register.')">MATCH ACCESS</button></div></div>`;
 }
 /* 6 — Evidence matching */
 function l6(){
- const rows=["Conference-room access","Transfer document"];
- const options=["Olivia Reed","Victor Sterling"];
+ const rows=["Person who entered conference room","Person named in transfer document","Person whose card opened security room"];
+ const options=["Olivia Reed","Victor Sterling","Ryan Carter"];
  const m=S.temp.map||{};
- return `<div class="panel">${head(6,"MATCH THE CLUES","Make two simple matches. Read what each clue directly tells you.")}<div class="match">
+ return `<div class="panel">${head(6,"MATCH THE EVIDENCE","Three clues point to three different people. Match each clue to the person it describes.")}<div class="match">
  <div class="matchcol"><div class="section">CLUES</div>
  ${rows.map((r,i)=>`<div class="matchrow"><span>${r}</span><span style="color:#d7b56a;font-size:11px">${m[i]!==undefined?options[m[i]]:"UNMATCHED"}</span></div>`).join("")}</div>
  <div class="matchcol"><div class="section">YOUR MATCHES</div>
  ${rows.map((r,i)=>`<div class="matchrow"><span style="color:#777">Clue ${i+1}</span><select onchange="setMatch(${i},this.value)" style="background:#080808;color:#ddd;border:1px solid #3b3730;padding:7px"><option value="-1">Choose…</option>${options.map((x,j)=>`<option value="${j}" ${m[i]==j?"selected":""}>${x}</option>`).join("")}</select></div>`).join("")}
  </div></div>
- <div class="note">The log says OR-119 entered the conference room. The document is about Victor's actions.</div>
+ <div class="note">Evidence: the conference-room badge register, the transfer authorization, and the security-room card log.</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
  <button class="cta" onclick="checkMatches()">VERIFY MATCHES</button></div>`;
 }
 function setMatch(i,v){S.temp.map=S.temp.map||{};if(v==="-1")delete S.temp.map[i];else S.temp.map[i]=Number(v);}
 function checkMatches(){
- const m=S.temp.map||{},ok=m[0]===0&&m[1]===1;
- check(5,ok,"At least one match is wrong. Distinguish the person who performs an action from the person whose document is involved.");
+ const m=S.temp.map||{},ok=m[0]===0&&m[1]===1&&m[2]===2;
+ check(5,ok,"At least one match is wrong. Match each clue to the person actually connected to that event.");
 }
 
 /* 7 — Logic */
 function l7(){
  const w=S.temp.who||"";
- return `<div class="panel">${head(7,"SPOT THE LIE","Only one statement conflicts with the known access log.")}<div class="logic">
- <div class="logicbox"><b>ALEX</b> “I was not in the conference room.”</div>
- <div class="logicbox"><b>RYAN</b> “My card was used at 4:14.”</div>
- <div class="logicbox"><b>OLIVIA</b> “My access identity never opened the conference room.”</div></div>
- <div class="logic" style="grid-template-columns:1fr"><div class="logicbox"><b>KNOWN FACT</b> The log shows <b>OR-119</b> opened the conference room at 4:18. OR = Olivia Reed.</div></div>
+ return `<div class="panel">${head(7,"SPOT THE LIE","Use the badge register and the statements. Only one statement cannot be true.")}<div class="logic">
+ <div class="logicbox"><b>ALEX</b> “My badge is AM-101, and I was never in the conference room.”</div>
+ <div class="logicbox"><b>RYAN</b> “My badge is RC-204, and it was used at the security room.”</div>
+ <div class="logicbox"><b>OLIVIA</b> “My badge is OR-119, and it was never used at the conference room.”</div></div>
+ <div class="logic" style="grid-template-columns:1fr"><div class="logicbox"><b>KNOWN FACT</b> The access log shows <b>OR-119</b> opening the conference-room door at 4:18 PM.</div></div>
  <div class="q"><h3>Who is lying?</h3><div class="answers">${["Alex","Ryan","Olivia"].map(x=>`<button class="ans ${w===x?"sel":""}" onclick="S.temp.who='${x}';render()">${x}</button>`).join("")}</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(6,w==='Olivia','The OR-119 identity is Olivia Reed.')">CALL THE LIAR</button></div></div>`;
+ <button class="cta" onclick="check(6,w==='Olivia','Compare each badge with the 4:18 conference-room entry.')">CALL THE LIAR</button></div></div>`;
 }
 /* 8 — Interrogation */
 function l8(){
@@ -327,16 +331,16 @@ function toggleQuestion(i){
 
 /* 9 — Vault */
 function l9(){
- return `<div class="panel">${head(9,"EASY VAULT","Use the four numbers shown below. No hidden calculation is needed.")}<div class="terminal">VAULT CODE
+ return `<div class="panel">${head(9,"VAULT CODE","The vault uses four simple case facts. Find each number from the evidence you collected, then enter the four digits in order.")}<div class="terminal">VAULT INSTRUCTIONS
 
-6 suspects
-7 minutes of security blackout
-4 PM stopped clock
-4 suspicious access attempts
+DIGIT 1 = number of suspects
+DIGIT 2 = length of the security blackout in minutes
+DIGIT 3 = hour shown on the stopped clock
+DIGIT 4 = number of suspicious access attempts
 
-Put the four numbers together in that order.</div>
+Use the case evidence — not guesswork.</div>
+ <div class="note">You have already seen all four facts in earlier levels. Check the Evidence Board if you need to review them.</div>
  <input id="vault" class="code" maxlength="4" inputmode="numeric" placeholder="____">
- <div class="note">Example: first number + second number + third number + fourth number.</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
  <button class="cta" onclick="checkVault()">OPEN VAULT</button></div>`;
 }
@@ -384,12 +388,12 @@ function hint(){
  S.hints--;S.score=Math.max(0,S.score-50);
  const h=[
  "Inspect all six objects before locking the scene.",
- "Look for the two alibi gaps that overlap the critical window.",
+ "Compare each suspect’s alibi with the critical window.",
  "Start with the printed timestamps and move left to right in time.",
  "The Caesar shift is the 3-minute difference between 4:14 and 4:17.",
- "OR-119 is the identity you need to trace.",
+ "Trace the badge from the file-access row back to the badge register.",
  "Ask whether the clue points to an actor, document owner or system.",
- "The false statement conflicts with credential ownership.",
+ "Compare the badge claimed by each suspect with the access log.",
  "Choose questions connecting time + access + motive.",
  "Count suspects, blackout minutes, clock hour and suspicious attempts."
  ];

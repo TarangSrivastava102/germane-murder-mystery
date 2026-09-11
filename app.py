@@ -197,18 +197,14 @@ function l1(){
  const o=[
  ["DIGITAL CLOCK","Clock stopped at 4:17 PM."],
  ["ACCESS CARD","Security card pinged the security room at 4:14 PM."],
- ["DISPLAY CABLE","Conference display disconnected shortly before the incident."],
- ["COFFEE MUG","Coffee was still warm at the scene."],
- ["TORN NOTE","Torn note mentions a hidden transfer."],
- ["SERVER PANEL","Four suspicious access attempts were logged."]
+ ["COFFEE MUG","Coffee was still warm."],
+ ["TORN NOTE","Note mentions a hidden transfer."]
  ];
- return `<div class="panel">${head(1,"SCENE SWEEP","Six objects are hidden in the room. Inspect all six before making the first deduction.")}
- <div class="scene">${o.map((x,i)=>`<button class="obj o${i+1} ${S.found.includes(i)?"found":""}" onclick="inspectScene(${i})">${x[0]}</button>`).join("")}</div>
+ return `<div class="panel">${head(1,"SCENE SWEEP","Inspect the four objects. One clue gives the clearest incident time.")}<div class="scene">${o.map((x,i)=>`<button class="obj o${i+1}" onclick="inspectScene(${i})">${x[0]}</button>`).join("")}</div>
  <p>${S.found.map(i=>`<span class="ev" style="display:inline-block">✓ ${o[i][0]}</span>`).join("")}</p>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <div class="q"><h3>Which time is the strongest anchor for the incident?</h3>
- <div class="answers">${["4:09 PM","4:14 PM","4:17 PM","4:24 PM"].map(x=>`<button class="ans ${S.sel===x?"sel":""}" onclick="S.sel='${x}';render()">${x}</button>`).join("")}</div>
- <button class="cta" onclick="check(0,S.found.length===6&&S.sel==='4:17 PM','Inspect all six objects, then use the strongest time anchor.')">LOCK SCENE</button></div></div>`;
+ <div class="q"><h3>What time did the incident happen?</h3><div class="answers">${["4:09 PM","4:14 PM","4:17 PM","4:24 PM"].map(x=>`<button class="ans ${S.sel===x?"sel":""}" onclick="S.sel='${x}';render()">${x}</button>`).join("")}</div>
+ <button class="cta" onclick="check(0,S.found.length===4&&S.sel==='4:17 PM','Look at the clock clue. Inspect all four objects first.')">LOCK SCENE</button></div></div>`;
 }
 function inspectScene(i){
  const d=[
@@ -222,11 +218,11 @@ function inspectScene(i){
 
 /* 2 — Contradictions */
 function l2(){
- const p=S.temp.picked||[];
- return `<div class="panel">${head(2,"WITNESS CONTRADICTIONS","Two alibis contain a gap that overlaps the critical window. Select exactly those two.")}
- <div class="cards">${SUSPECTS.map((s,i)=>`<button class="card ${p.includes(i)?"ans sel":""}" onclick="togglePick(${i})"><b>${s.name}</b><small>${s.role}<br>${s.alibi}<br><br>${s.detail}</small></button>`).join("")}</div>
+ return `<div class="panel">${head(2,"THE SUSPECT BOARD","Read the short clues and identify the suspect whose access is directly connected to the conference room.")}<div class="cards">
+ ${SUSPECTS.map((s,i)=>`<button class="card ${S.sel===s.name?"ans sel":""}" onclick="S.sel='${s.name}';render()"><b>${s.name}</b><small>${s.role}<br>${s.detail}</small></button>`).join("")}</div>
+ <div class="note">CLUE: The conference-room access code is <b>OR-119</b>. Which suspect has the initials OR?</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <div class="q"><button class="cta" onclick="check(1,JSON.stringify((S.temp.picked||[]).sort())===JSON.stringify([0,5]),'Select the two alibis whose time windows cannot be independently supported.')">EXPOSE CONTRADICTIONS</button></div></div>`;
+ <button class="cta" onclick="check(1,S.sel==='Olivia Reed','Look at the initials OR in the clue.')">IDENTIFY SUSPECT</button></div>`;
 }
 function togglePick(i){
  S.temp.picked=S.temp.picked||[];const p=S.temp.picked.indexOf(i);
@@ -236,160 +232,137 @@ function togglePick(i){
 
 /* 3 — Timeline */
 function l3(){
- const e=[
- ["A","Daniel's client call ends","4:09"],["B","Server access appears","4:12"],
- ["C","Security-room card ping","4:14"],["D","Security system disabled","4:17"],
- ["E","Figure enters conference room","4:18"],["F","Project Blackbox disappears","4:20"],
- ["G","Victor confronts the intruder","4:22"],["H","Security restored","4:24"]
- ];
+ const e=[["A","Daniel's call ends","4:09"],["B","Security card ping","4:14"],["C","Security is disabled","4:17"],["D","Figure enters room","4:18"]];
  const q=S.temp.seq||[];
- return `<div class="panel">${head(3,"TIMELINE LOCK","Click the events in chronological order. Your sequence is built below; duplicate clicks are ignored.")}
- <div class="order-grid">${e.map((x,i)=>`<button class="order ${q.includes(i)?"selected":""}" onclick="pickOrder(${i})"><b>${x[0]}</b> — ${x[1]}<br><span style="color:#777;font:11px monospace">${x[2]}</span></button>`).join("")}</div>
- <div class="sequence">${q.length?q.map(i=>`${e[i][0]} — ${e[i][1]}`).join(" → "):"Your chronological chain will appear here."}</div>
+ return `<div class="panel">${head(3,"EASY TIMELINE","Put the four events in time order. The times are shown on each card.")}<div class="order-grid">${e.map((x,i)=>`<button class="order ${q.includes(i)?"selected":""}" onclick="pickOrder(${i})"><b>${x[0]}</b> — ${x[1]}<br><span style="color:#777;font:11px monospace">${x[2]}</span></button>`).join("")}</div>
+ <div class="sequence">${q.length?q.map(i=>`${e[i][0]} — ${e[i][1]}`).join(" → "):"Click the events from earliest to latest."}</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(2,JSON.stringify(S.temp.seq||[])===JSON.stringify([0,1,2,3,4,5,6,7]),'The chain is not fully chronological. Re-check every timestamp.')">SEAL TIMELINE</button></div>`;
+ <button class="cta" onclick="check(2,JSON.stringify(S.temp.seq||[])===JSON.stringify([0,1,2,3]),'Start with the earliest time: 4:09 PM.')">LOCK TIMELINE</button></div>`;
 }
 function pickOrder(i){S.temp.seq=S.temp.seq||[];if(!S.temp.seq.includes(i)&&S.temp.seq.length<8)S.temp.seq.push(i);render();}
 
 /* 4 — Cipher */
 function l4(){
- return `<div class="panel">${head(4,"CIPHER ROOM","The torn note uses a Caesar cipher. The scene gives the shift: calculate the minutes between the security-card ping and the stopped clock.")}
- <div class="terminal">ENCRYPTED MESSAGE
+ return `<div class="panel">${head(4,"SECRET MESSAGE","Decode the short message. Every letter has been moved forward by 1. Move each letter back by 1.")}<div class="terminal">ENCRYPTED MESSAGE
 
-VHFUHW DW GDZQ
+TFDSFU
 
-CLUE:
-security ping → stopped clock
-Use that difference as the Caesar shift.
+CLUE: Move every letter back by ONE.
 
-Enter the decrypted phrase.</div>
- <input id="cipher" style="width:min(620px,100%);margin-top:18px;padding:14px;background:#080808;color:#fff;border:1px solid #403a31;text-transform:uppercase" placeholder="ENTER DECRYPTED PHRASE">
+What is the secret word?</div>
+ <input id="cipher" style="width:min(620px,100%);margin-top:18px;padding:14px;background:#080808;color:#fff;border:1px solid #403a31;text-transform:uppercase" placeholder="ENTER SECRET WORD">
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="checkCipher()">DECRYPT MESSAGE</button></div>`;
+ <button class="cta" onclick="checkCipher()">DECODE MESSAGE</button></div>`;
 }
 function checkCipher(){
  const v=(document.getElementById("cipher")?.value||"").trim().toUpperCase().replace(/\s+/g," ");
- check(3,v==="SECRET AT DAWN","Use the 3-minute difference as the Caesar shift and decode every letter.");
+ check(3,v==="SECRET","Use the 3-minute difference as the Caesar shift and decode every letter.");
 }
 
 /* 5 — Access logs */
 function l5(){
  const logs=[
- "4:11   MK-301   Studio door          CARD ACCEPTED",
  "4:14   RC-204   Security room        CARD ACCEPTED",
- "4:16   UNKNOWN  Network console      FAILED",
  "4:17   SYS      Security control     DISABLE",
  "4:18   OR-119   Conference room      DOOR OPEN",
- "4:20   OR-119   Conference room      FILE ACCESS",
- "4:24   SYS      Security control     RESTORE"
- ].join("\n");
- return `<div class="panel">${head(5,"ACCESS LOGS","Match the critical file-access identity to the suspect files. Ignore motive for this level; follow the identity code.")}
- <div class="terminal">${logs}</div>
- <div class="q"><h3>Who matches OR-119?</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${S.sel===s.name?"sel":""}" onclick="S.sel='${s.name}';render()">${s.name}</button>`).join("")}</div>
+ "4:20   OR-119   Conference room      FILE ACCESS"
+ ].join("
+");
+ return `<div class="panel">${head(5,"ACCESS LOG","One identity appears when the missing file is accessed. Match that identity to a suspect.")}<div class="terminal">${logs}</div>
+ <div class="note">CLUE: OR = first letter of the first name + first letter of the last name.</div>
+ <div class="q"><h3>Who is OR?</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${S.sel===s.name?"sel":""}" onclick="S.sel='${s.name}';render()">${s.name}</button>`).join("")}</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(4,S.sel==='Olivia Reed','Use the initials in the suspect files to decode the access identity.')">MATCH ACCESS</button></div></div>`;
+ <button class="cta" onclick="check(4,S.sel==='Olivia Reed','OR means Olivia Reed.')">MATCH ACCESS</button></div></div>`;
 }
-
 /* 6 — Evidence matching */
 function l6(){
- const rows=["Security blackout","Transfer authorization","CCTV entry","Missing file"];
- const options=["Ryan Carter","Olivia Reed","Victor Sterling","Security system"];
+ const rows=["Conference-room access","Transfer document"];
+ const options=["Olivia Reed","Victor Sterling"];
  const m=S.temp.map||{};
- return `<div class="panel">${head(6,"EVIDENCE MATCH","Match each clue to the strongest connected person or event. All four must be correct.")}
- <div class="match"><div class="matchcol"><div class="section">CLUES</div>
+ return `<div class="panel">${head(6,"MATCH THE CLUES","Make two simple matches. Read what each clue directly tells you.")}<div class="match">
+ <div class="matchcol"><div class="section">CLUES</div>
  ${rows.map((r,i)=>`<div class="matchrow"><span>${r}</span><span style="color:#d7b56a;font-size:11px">${m[i]!==undefined?options[m[i]]:"UNMATCHED"}</span></div>`).join("")}</div>
  <div class="matchcol"><div class="section">YOUR MATCHES</div>
  ${rows.map((r,i)=>`<div class="matchrow"><span style="color:#777">Clue ${i+1}</span><select onchange="setMatch(${i},this.value)" style="background:#080808;color:#ddd;border:1px solid #3b3730;padding:7px"><option value="-1">Choose…</option>${options.map((x,j)=>`<option value="${j}" ${m[i]==j?"selected":""}>${x}</option>`).join("")}</select></div>`).join("")}
  </div></div>
- <div class="note">A clue may identify the actor, the owner of a document, or the system involved. Think about what the clue actually proves.</div>
+ <div class="note">The log says OR-119 entered the conference room. The document is about Victor's actions.</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
  <button class="cta" onclick="checkMatches()">VERIFY MATCHES</button></div>`;
 }
 function setMatch(i,v){S.temp.map=S.temp.map||{};if(v==="-1")delete S.temp.map[i];else S.temp.map[i]=Number(v);}
 function checkMatches(){
- const m=S.temp.map||{},ok=m[0]===0&&m[1]===1&&m[2]===1&&m[3]===2;
+ const m=S.temp.map||{},ok=m[0]===0&&m[1]===1;
  check(5,ok,"At least one match is wrong. Distinguish the person who performs an action from the person whose document is involved.");
 }
 
 /* 7 — Logic */
 function l7(){
  const w=S.temp.who||"";
- return `<div class="panel">${head(7,"LOGIC TEST","Exactly one of these three statements is false. Use the known access facts; do not rely on motive.")}
- <div class="logic">
- <div class="logicbox"><b>ALEX</b>“I never entered the conference room.”</div>
- <div class="logicbox"><b>RYAN</b>“My card was used at 4:14, but I was in the server bay.”</div>
- <div class="logicbox"><b>OLIVIA</b>“My access identity never opened the conference room.”</div></div>
- <div class="logic" style="grid-template-columns:1fr"><div class="logicbox"><b>KNOWN FACTS</b>The 4:14 security-room card was Ryan's. The 4:18 conference-room identity was Olivia's. CCTV places a person inside at 4:18.</div></div>
- <div class="q"><h3>Which statement is false?</h3><div class="answers">${["Alex","Ryan","Olivia"].map(x=>`<button class="ans ${w===x?"sel":""}" onclick="S.temp.who='${x}';render()">${x}</button>`).join("")}</div>
+ return `<div class="panel">${head(7,"SPOT THE LIE","Only one statement conflicts with the known access log.")}<div class="logic">
+ <div class="logicbox"><b>ALEX</b> “I was not in the conference room.”</div>
+ <div class="logicbox"><b>RYAN</b> “My card was used at 4:14.”</div>
+ <div class="logicbox"><b>OLIVIA</b> “My access identity never opened the conference room.”</div></div>
+ <div class="logic" style="grid-template-columns:1fr"><div class="logicbox"><b>KNOWN FACT</b> The log shows <b>OR-119</b> opened the conference room at 4:18. OR = Olivia Reed.</div></div>
+ <div class="q"><h3>Who is lying?</h3><div class="answers">${["Alex","Ryan","Olivia"].map(x=>`<button class="ans ${w===x?"sel":""}" onclick="S.temp.who='${x}';render()">${x}</button>`).join("")}</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(6,w==='Olivia','Follow the ownership of each access credential carefully.')">CALL THE LIAR</button></div></div>`;
+ <button class="cta" onclick="check(6,w==='Olivia','The OR-119 identity is Olivia Reed.')">CALL THE LIAR</button></div></div>`;
 }
-
 /* 8 — Interrogation */
 function l8(){
  const q=S.temp.questions||[];
  const qs=[
- "Where were you between 4:14 and 4:20?",
- "Why does your access identity appear in the conference-room log?",
- "Who knew about the transfer authorization?",
- "Why was the security system disabled?"
+ "Where were you at 4:18?",
+ "Why does OR-119 appear in the file-access log?",
+ "What is your favorite movie?"
  ];
- return `<div class="panel">${head(8,"INTERROGATION","Choose exactly three questions. The best set directly tests time, access identity and knowledge of the motive.")}
- <div class="cards">${qs.map((x,i)=>`<button class="card ${q.includes(i)?"ans sel":""}" onclick="toggleQuestion(${i})"><b>QUESTION ${i+1}</b><small>${x}</small></button>`).join("")}</div>
- <div class="q"><h3>Selected: ${q.length}/3</h3>
+ return `<div class="panel">${head(8,"ASK THE RIGHT QUESTIONS","Choose the two questions that help solve the case. One is clearly unrelated.")}<div class="cards">${qs.map((x,i)=>`<button class="card ${q.includes(i)?"ans sel":""}" onclick="toggleQuestion(${i})"><b>QUESTION ${i+1}</b><small>${x}</small></button>`).join("")}</div>
+ <div class="q"><h3>Selected: ${q.length}/2</h3>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="check(7,JSON.stringify((S.temp.questions||[]).sort())===JSON.stringify([0,1,2]),'Choose the three questions that directly test time, access and motive.')">START INTERROGATION</button></div></div>`;
+ <button class="cta" onclick="check(7,JSON.stringify((S.temp.questions||[]).sort())===JSON.stringify([0,1]),'Choose the two questions about time and access.')">START INTERROGATION</button></div></div>`;
 }
 function toggleQuestion(i){
  S.temp.questions=S.temp.questions||[];const p=S.temp.questions.indexOf(i);
- if(p>=0)S.temp.questions.splice(p,1);else if(S.temp.questions.length<3)S.temp.questions.push(i);
+ if(p>=0)S.temp.questions.splice(p,1);else if(S.temp.questions.length<2)S.temp.questions.push(i);
  render();
 }
 
 /* 9 — Vault */
 function l9(){
- return `<div class="panel">${head(9,"VAULT CODE","The final file is protected by a different four-digit lock. Follow the formula exactly.")}
- <div class="terminal">VAULT FORMULA
+ return `<div class="panel">${head(9,"EASY VAULT","Use the four numbers shown below. No hidden calculation is needed.")}<div class="terminal">VAULT CODE
 
-DIGIT 1 = number of people in the suspect pool
-DIGIT 2 = minutes of the security blackout
-DIGIT 3 = hour shown on the stopped clock
-DIGIT 4 = number of suspicious access attempts
+6 suspects
+7 minutes of security blackout
+4 PM stopped clock
+4 suspicious access attempts
 
-Enter the four digits in order.</div>
+Put the four numbers together in that order.</div>
  <input id="vault" class="code" maxlength="4" inputmode="numeric" placeholder="____">
- <div class="note">This is NOT the earlier keypad code. It uses a new formula.</div>
+ <div class="note">Example: first number + second number + third number + fourth number.</div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
  <button class="cta" onclick="checkVault()">OPEN VAULT</button></div>`;
 }
 function checkVault(){
  const v=(document.getElementById("vault")?.value||"").trim();
- check(8,v==="6734","Read all four formula lines. The third digit is the hour, not the minute.");
+ check(8,v==="6744","Read all four formula lines. Use the four numbers exactly as displayed.");
 }
 
 /* 10 — Final accusation */
 function l10(){
  const F=S.final;
- return `<div class="panel">${head(10,"FINAL ACCUSATION","A correct accusation must connect the culprit, motive, method and strongest proof.")}
- <div class="q"><h3>1. Culprit</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${F.who===s.name?"sel":""}" onclick="S.final.who='${s.name}';render()">${s.name}</button>`).join("")}</div></div>
- <div class="q"><h3>2. Motive</h3><div class="answers">${[
- ["A","Revenge after a personal argument"],["B","Steal company money"],["C","Obtain evidence before Victor could blame her department"],["D","Destroy the entire company"]
- ].map(x=>`<button class="ans ${F.why===x[0]?"sel":""}" onclick="S.final.why='${x[0]}';render()">${x[0]}. ${x[1]}</button>`).join("")}</div></div>
- <div class="q"><h3>3. Method</h3><div class="answers">${[
- ["A","Use the security blackout → enter the conference room → take the file → confront Victor"],
- ["B","Hack the server → steal money → destroy CCTV"],
- ["C","Steal Ryan's card → fake a client call → leave before 4:14"]
- ].map(x=>`<button class="ans ${F.how===x[0]?"sel":""}" onclick="S.final.how='${x[0]}';render()">${x[0]}. ${x[1]}</button>`).join("")}</div></div>
- <div class="q"><h3>4. Strongest proof</h3><div class="answers">${[
- ["A","Warm coffee"],["B","Olivia's 4:18 conference-room access identity"],["C","Maya's campaign presentation"],["D","Daniel's client call"]
- ].map(x=>`<button class="ans ${F.proof===x[0]?"sel":""}" onclick="S.final.proof='${x[0]}';render()">${x[0]}. ${x[1]}</button>`).join("")}</div></div>
+ return `<div class="panel">${head(10,"FINAL ACCUSATION","You have all the important clues. Make the final call.")}<div class="q"><h3>1. Who took the file?</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${F.who===s.name?"sel":""}" onclick="S.final.who='${s.name}';render()">${s.name}</button>`).join("")}</div></div>
+ <div class="q"><h3>2. Why?</h3><div class="answers">${[["A","To steal money"],["B","To get evidence before Victor blamed her department"],["C","To ruin the company"]].map(x=>`<button class="ans ${F.why===x[0]?"sel":""}" onclick="S.final.why='${x[0]}';render()">${x[0]}. ${x[1]}</button>`).join("")}</div></div>
+ <div class="q"><h3>3. What is the strongest proof?</h3><div class="answers">${[["A","Warm coffee"],["B","OR-119 accessed the conference room at 4:18"],["C","Daniel's call ended at 4:09"]].map(x=>`<button class="ans ${F.proof===x[0]?"sel":""}" onclick="S.final.proof='${x[0]}';render()">${x[0]}. ${x[1]}</button>`).join("")}</div></div>
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
- <button class="cta" onclick="finalSubmit()">SUBMIT ACCUSATION</button></div>`;
+ <button class="cta" onclick="finalSubmit()">CLOSE CASE</button></div>`;
 }
 function finalSubmit(){
- const ok=S.final.who==="Olivia Reed"&&S.final.why==="C"&&S.final.how==="A"&&S.final.proof==="B";
- if(ok){S.score+=400;S.screen="reveal";render();}
- else{S.score=Math.max(0,S.score-60);S.feedback="The accusation is incomplete. Every part must fit the timeline, access logs and motive.";render();}
+ if(S.final.who==="Olivia Reed"&&S.final.why==="B"&&S.final.proof==="B"){
+  S.score+=250;S.screen="reveal";render();
+ }else{
+  S.score=Math.max(0,S.score-25);
+  S.feedback="The evidence does not support all three answers. Check the OR-119 clue.";
+  render();
+ }
 }
 
 function evidence(){

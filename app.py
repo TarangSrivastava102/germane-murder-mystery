@@ -177,6 +177,7 @@ HTML_GAME = """
             align-items: center;
             justify-content: center;
             position: relative;
+            z-index: 1;
             text-align: center;
             overflow: hidden;
         }
@@ -701,18 +702,27 @@ HTML_GAME = """
         // Streamlit/iframe event handling cannot prevent the game from starting.
         const startBtn = document.getElementById('start-game-btn');
         if (startBtn) {
-            startBtn.onclick = function(event) {
+            // Use BOTH click and pointerup. This is deliberately redundant for
+            // Streamlit's iframe/browser event handling.
+            startBtn.addEventListener('click', function(event) {
                 event.preventDefault();
                 event.stopPropagation();
-                startGame();
-            };
+                window.startGame();
+            }, false);
+            startBtn.addEventListener('pointerup', function(event) {
+                if (event.button !== 0) return;
+                event.preventDefault();
+                event.stopPropagation();
+                window.startGame();
+            }, false);
         }
     }
 
     function startGame() {
-        // Disable the start button immediately to prevent double clicks.
-        const clickedBtn = document.getElementById('start-game-btn');
-        if (clickedBtn) clickedBtn.disabled = true;
+        // FIRST ACTION: change the screen. This guarantees the user sees that
+        // the click was received even if a browser feature fails afterwards.
+        const stage = document.getElementById('stage');
+        if (!stage) return;
 
         const inputEl = document.getElementById('team-input');
         const input = inputEl ? inputEl.value : '';
@@ -721,19 +731,35 @@ HTML_GAME = """
         const teamDisplay = document.getElementById('display-team');
         if (teamDisplay) teamDisplay.innerText = `TEAM: ${teamName}`;
 
+        if (timerInterval) clearInterval(timerInterval);
         startTimer();
 
-        // Audio is optional and can never block the game.
+        // Render the transition screen DIRECTLY. Do not depend on audio or a
+        // second function to make the click appear to work.
+        stage.innerHTML = `
+            <div class="char-modal" style="position:relative; z-index:20; opacity:1; visibility:visible;">
+                <div class="char-avatar">👨‍💼</div>
+                <div class="char-name">TARANG (The HR Boss)</div>
+                <div class="char-quote">"Welcome to Friday! 30 minutes on the clock. Survive all 10 challenges and don't embarrass HR!"</div>
+                <button class="btn-main" id="char-btn" type="button">CONTINUE 🚀</button>
+            </div>
+        `;
+
+        // Sound is optional. It is deliberately LAST.
         playSound('cheer');
 
-        // Show the first transition screen.
-        showCharacterPopup(
-            '👨‍💼',
-            'TARANG (The HR Boss)',
-            'Welcome to Friday! 30 minutes on the clock. Survive all 10 challenges and don\'t embarrass HR!',
-            loadLevel1
-        );
+        const continueBtn = document.getElementById('char-btn');
+        if (continueBtn) {
+            continueBtn.onclick = function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                loadLevel1();
+            };
+        }
     }
+
+    // Make it explicitly available to inline/fallback handlers.
+    window.startGame = startGame;
 
     // LEVEL 1: TRAFFIC SIMULATOR
     let level1Targets = { cow: false, auto: false, chai: false, rider: false, scooter: false };
@@ -1284,7 +1310,7 @@ HTML_GAME = """
         const btn = event.target.closest ? event.target.closest('#start-game-btn') : null;
         if (btn) {
             event.preventDefault();
-            startGame();
+            window.startGame();
         }
     }, true);
 

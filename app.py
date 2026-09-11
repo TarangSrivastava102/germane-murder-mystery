@@ -687,7 +687,7 @@ HTML_GAME = """
                 <label style="font-size:12px; font-weight:700;">ENTER TEAM NAME:</label><br>
                 <input type="text" id="team-input" value="THE JUGAADUS" style="padding:10px; border-radius:8px; border:2px solid #ffd700; background:#110d29; color:#fff; font-weight:700; text-align:center; font-size:16px;">
             </div>
-            <button class="btn-main" onclick="startGame()">START THE CHAOS 🚀</button>
+            <button class="btn-main" id="start-game-btn" type="button">START THE CHAOS 🚀</button>
         `;
 
         // HUD is updated after the stage is rendered.
@@ -697,23 +697,36 @@ HTML_GAME = """
         document.getElementById('alert-zone').innerHTML = '';
         updateHUD();
 
+        // Bind the Start button directly. Also keep a document-level fallback so
+        // Streamlit/iframe event handling cannot prevent the game from starting.
         const startBtn = document.getElementById('start-game-btn');
         if (startBtn) {
-            startBtn.addEventListener('click', startGame);
+            startBtn.onclick = function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                startGame();
+            };
         }
     }
 
     function startGame() {
+        // Disable the start button immediately to prevent double clicks.
+        const clickedBtn = document.getElementById('start-game-btn');
+        if (clickedBtn) clickedBtn.disabled = true;
+
         const inputEl = document.getElementById('team-input');
         const input = inputEl ? inputEl.value : '';
-        if (input.trim()) teamName = input.trim().toUpperCase();
+        if (input && input.trim()) teamName = input.trim().toUpperCase();
 
-        document.getElementById('display-team').innerText = `TEAM: ${teamName}`;
+        const teamDisplay = document.getElementById('display-team');
+        if (teamDisplay) teamDisplay.innerText = `TEAM: ${teamName}`;
+
         startTimer();
 
-        // Start the game even if browser audio is unavailable.
-        try { playSound('cheer'); } catch (e) {}
+        // Audio is optional and can never block the game.
+        playSound('cheer');
 
+        // Show the first transition screen.
         showCharacterPopup(
             '👨‍💼',
             'TARANG (The HR Boss)',
@@ -1265,6 +1278,15 @@ HTML_GAME = """
             </div>
         `;
     }
+
+    // Extra-safe click fallback for Streamlit iframe environments.
+    document.addEventListener('click', function(event) {
+        const btn = event.target.closest ? event.target.closest('#start-game-btn') : null;
+        if (btn) {
+            event.preventDefault();
+            startGame();
+        }
+    }, true);
 
     // INITIALIZE ON LOAD
     if (document.readyState === 'loading') {

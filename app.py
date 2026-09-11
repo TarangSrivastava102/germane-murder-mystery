@@ -4,12 +4,12 @@ import streamlit.components.v1 as components
 st.set_page_config(
     page_title="Germane Media LLC — The Blackbox Incident",
     page_icon="🕵️",
-    layout="wide"
+    layout="wide",
 )
 
-HTML = r'''
+HTML = r"""
 <!doctype html>
-<html>
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
@@ -17,57 +17,79 @@ HTML = r'''
 <style>
 :root{
     --bg:#080808;
-    --p:#121212;
-    --g:#d1ad65;
-    --r:#b74343;
-    --w:#eee9df;
-    --m:#969188;
-    --l:#2b2925;
+    --panel:#121212;
+    --gold:#d1ad65;
+    --red:#b74343;
+    --white:#eee9df;
+    --muted:#969188;
+    --line:#2b2925;
 }
 
-*{box-sizing:border-box}
+*{
+    box-sizing:border-box;
+}
 
-body{
+html,body{
     margin:0;
-    background:radial-gradient(circle at 70% 5%,#292015,#080808 42%);
-    color:var(--w);
+    padding:0;
+    background:
+        radial-gradient(
+            circle at 70% 5%,
+            #292015,
+            #080808 42%
+        );
+    color:var(--white);
     font-family:Arial,sans-serif;
 }
 
-button,input{font:inherit}
-button{cursor:pointer}
+button,
+input{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+button:disabled{
+    cursor:not-allowed;
+    opacity:.55;
+}
 
 .app{
     max-width:1400px;
     margin:auto;
-    padding:22px
+    padding:22px;
 }
 
 .top{
     display:flex;
     justify-content:space-between;
     align-items:center;
-    border-bottom:1px solid var(--l);
+    border-bottom:1px solid var(--line);
     padding:10px 0 16px;
     position:sticky;
     top:0;
     background:#090909ee;
-    z-index:5
+    z-index:5;
 }
 
 .brand{
     font-size:11px;
     letter-spacing:3px;
-    color:var(--g);
-    font-weight:800
+    color:var(--gold);
+    font-weight:800;
 }
 
 .timer{
     font:900 28px monospace;
-    color:var(--g)
+    color:var(--gold);
+    margin-left:10px;
 }
 
-.urgent{color:#e05a5a}
+.urgent{
+    color:#e05a5a;
+}
 
 .hero{
     min-height:88vh;
@@ -75,43 +97,47 @@ button{cursor:pointer}
     flex-direction:column;
     justify-content:center;
     align-items:center;
-    text-align:center
+    text-align:center;
 }
 
 .hero h1{
     font:normal 82px/.88 Georgia,serif;
     letter-spacing:2px;
-    margin:20px
+    margin:20px;
 }
 
 .hero h2{
     letter-spacing:6px;
     font-size:14px;
-    color:#c8bfae
+    color:#c8bfae;
 }
 
 .hero p{
-    max-width:650px;
-    color:var(--m);
-    line-height:1.7
+    max-width:680px;
+    color:var(--muted);
+    line-height:1.7;
 }
 
 .cta{
-    background:linear-gradient(135deg,#e3c27c,#a47e3b);
+    background:linear-gradient(
+        135deg,
+        #e3c27c,
+        #a47e3b
+    );
     border:0;
     padding:15px 25px;
     font-weight:900;
     letter-spacing:2px;
     margin-top:18px;
-    color:#17130d
+    color:#17130d;
 }
 
 .setup{
     width:min(520px,90%);
-    border:1px solid var(--l);
+    border:1px solid var(--line);
     background:#101010;
     padding:25px;
-    text-align:left
+    text-align:left;
 }
 
 .setup label{
@@ -119,7 +145,7 @@ button{cursor:pointer}
     letter-spacing:2px;
     color:#888;
     display:block;
-    margin-bottom:8px
+    margin-bottom:8px;
 }
 
 .setup input{
@@ -127,67 +153,90 @@ button{cursor:pointer}
     padding:13px;
     background:#080808;
     color:white;
-    border:1px solid #3a352d
+    border:1px solid #3a352d;
+    outline:none;
+}
+
+.setup input:focus{
+    border-color:var(--gold);
 }
 
 .grid{
     display:grid;
     grid-template-columns:210px 1fr 230px;
     gap:16px;
-    margin-top:18px
+    margin-top:18px;
 }
 
-.side,.right,.panel{
-    background:linear-gradient(150deg,#151515,#0d0d0d);
-    border:1px solid var(--l)
+.side,
+.right,
+.panel{
+    background:
+        linear-gradient(
+            150deg,
+            #151515,
+            #0d0d0d
+        );
+    border:1px solid var(--line);
 }
 
-.side,.right{padding:16px}
+.side,
+.right{
+    padding:16px;
+}
 
-.side{min-height:650px}
+.side{
+    min-height:650px;
+}
 
 .panel{
     padding:24px;
-    min-height:650px
+    min-height:650px;
 }
 
 .section{
     font-size:10px;
     letter-spacing:2px;
     color:#777;
-    font-weight:bold
+    font-weight:bold;
 }
 
 .levels{
     display:grid;
     gap:7px;
-    margin-top:14px
+    margin-top:14px;
 }
 
-.lvl,.tiny,.ans{
+.lvl,
+.tiny,
+.ans{
     background:#101010;
     border:1px solid #302d28;
     color:#bbb;
     padding:11px;
-    text-align:left
+    text-align:left;
+}
+
+.lvl{
+    width:100%;
 }
 
 .lvl.active{
-    border-color:var(--g);
-    color:var(--g);
-    background:#1d180f
+    border-color:var(--gold);
+    color:var(--gold);
+    background:#1d180f;
 }
 
 .lvl.done{
-    color:#8fbc9a
+    color:#8fbc9a;
 }
 
 .score{
-    border:1px solid var(--l);
+    border:1px solid var(--line);
     padding:14px;
     margin:18px 0;
     font:900 28px monospace;
-    color:var(--g)
+    color:var(--gold);
 }
 
 .ev{
@@ -196,39 +245,44 @@ button{cursor:pointer}
     padding:9px;
     margin:6px 0;
     font-size:11px;
-    color:#bdb6aa
+    color:#bdb6aa;
 }
 
 .head{
     display:flex;
     justify-content:space-between;
-    border-bottom:1px solid var(--l);
+    border-bottom:1px solid var(--line);
     padding-bottom:16px;
-    margin-bottom:18px
+    margin-bottom:18px;
 }
 
 .no{
-    color:var(--g);
+    color:var(--gold);
     font-size:10px;
-    letter-spacing:3px
+    letter-spacing:3px;
 }
 
 .title{
     font:38px Georgia,serif;
-    margin-top:6px
+    margin-top:6px;
 }
 
 .brief{
-    color:var(--m);
-    line-height:1.55
+    color:var(--muted);
+    line-height:1.55;
 }
 
 .scene{
     height:400px;
     border:1px solid #413a30;
-    background:radial-gradient(circle at 50% 35%,#454036,#171615 60%);
+    background:
+        radial-gradient(
+            circle at 50% 35%,
+            #454036,
+            #171615 60%
+        );
     position:relative;
-    overflow:hidden
+    overflow:hidden;
 }
 
 .scene:before{
@@ -237,7 +291,7 @@ button{cursor:pointer}
     top:14px;
     left:16px;
     color:#ad9158;
-    font:11px monospace
+    font:11px monospace;
 }
 
 .desk{
@@ -247,7 +301,7 @@ button{cursor:pointer}
     width:72%;
     height:80px;
     background:#30271d;
-    border:2px solid #5b4c39
+    border:2px solid #5b4c39;
 }
 
 .obj{
@@ -256,7 +310,7 @@ button{cursor:pointer}
     border:1px solid #74603a;
     color:#ead6a5;
     padding:9px;
-    font-size:10px
+    font-size:10px;
 }
 
 .o1{left:44%;top:80px}
@@ -267,27 +321,28 @@ button{cursor:pointer}
 
 .q{
     margin-top:20px;
-    border-top:1px solid var(--l);
-    padding-top:18px
+    border-top:1px solid var(--line);
+    padding-top:18px;
 }
 
 .answers{
     display:flex;
     flex-wrap:wrap;
-    gap:8px
+    gap:8px;
 }
 
 .ans.sel{
-    border-color:var(--g);
+    border-color:var(--gold);
     background:#211a0d;
-    color:#f0d18b
+    color:#f0d18b;
 }
 
 .feedback{
     padding:12px;
     background:#17140f;
-    border-left:3px solid var(--g);
-    margin-top:12px
+    border-left:3px solid var(--gold);
+    margin-top:12px;
+    line-height:1.5;
 }
 
 .riddle{
@@ -295,7 +350,7 @@ button{cursor:pointer}
     text-align:center;
     font:23px/1.7 Georgia,serif;
     border:1px solid #373128;
-    background:#090909
+    background:#090909;
 }
 
 .terminal{
@@ -303,7 +358,7 @@ button{cursor:pointer}
     background:#050505;
     border:1px solid #393a32;
     padding:20px;
-    color:#a9c7a9
+    color:#a9c7a9;
 }
 
 .code{
@@ -316,13 +371,13 @@ button{cursor:pointer}
     letter-spacing:9px;
     background:#090909;
     border:1px solid #5d5039;
-    color:white
+    color:white;
 }
 
 .pieces{
     display:grid;
     grid-template-columns:repeat(5,1fr);
-    gap:7px
+    gap:7px;
 }
 
 .piece{
@@ -330,12 +385,12 @@ button{cursor:pointer}
     min-height:65px;
     background:#0b0b0b;
     border:1px dashed #534938;
-    color:#c9c0b0
+    color:#c9c0b0;
 }
 
 .piece.sel{
-    border-color:var(--g);
-    background:#211b10
+    border-color:var(--gold);
+    background:#211b10;
 }
 
 .assembled{
@@ -344,19 +399,19 @@ button{cursor:pointer}
     background:#eee6d3;
     color:#252119;
     padding:18px;
-    font:17px/1.5 Georgia,serif
+    font:17px/1.5 Georgia,serif;
 }
 
 .suspects{
     display:grid;
     grid-template-columns:repeat(3,1fr);
-    gap:9px
+    gap:9px;
 }
 
 .sus{
     padding:13px;
     background:#0b0b0b;
-    border:1px solid var(--l)
+    border:1px solid var(--line);
 }
 
 .ava{
@@ -366,20 +421,21 @@ button{cursor:pointer}
     display:grid;
     place-items:center;
     border:1px solid #604f32;
-    color:var(--g);
+    color:var(--gold);
     margin-bottom:8px;
-    font-weight:bold
+    font-weight:bold;
 }
 
 .sus small{
     color:#777;
     display:block;
-    margin-top:4px
+    margin-top:4px;
 }
 
 .timeline{
     display:grid;
-    gap:6px
+    gap:6px;
+    width:min(720px,100%);
 }
 
 .time{
@@ -387,12 +443,13 @@ button{cursor:pointer}
     grid-template-columns:80px 1fr;
     background:#0b0b0b;
     border-left:2px solid #614e30;
-    padding:9px
+    padding:9px;
+    text-align:left;
 }
 
 .time b{
     font:11px monospace;
-    color:var(--g)
+    color:var(--gold);
 }
 
 .final{
@@ -400,21 +457,21 @@ button{cursor:pointer}
     display:flex;
     flex-direction:column;
     align-items:center;
-    justify-content:center
+    justify-content:center;
 }
 
 .stamp{
-    border:2px solid var(--g);
+    border:2px solid var(--gold);
     padding:10px 20px;
     letter-spacing:6px;
-    color:var(--g);
-    transform:rotate(-3deg)
+    color:var(--gold);
+    transform:rotate(-3deg);
 }
 
 .reveal{
     font:64px Georgia,serif;
     color:#f0d18b;
-    margin:20px
+    margin:20px;
 }
 
 .modal{
@@ -423,7 +480,7 @@ button{cursor:pointer}
     background:#000c;
     display:grid;
     place-items:center;
-    z-index:20
+    z-index:20;
 }
 
 .modalbox{
@@ -432,7 +489,7 @@ button{cursor:pointer}
     overflow:auto;
     background:#111;
     border:1px solid #5b4b32;
-    padding:22px
+    padding:22px;
 }
 
 .close{
@@ -440,7 +497,7 @@ button{cursor:pointer}
     background:none;
     border:0;
     color:#aaa;
-    font-size:22px
+    font-size:22px;
 }
 
 .rule{
@@ -450,26 +507,53 @@ button{cursor:pointer}
     margin:12px 0;
     color:#aaa;
     font-size:12px;
-    line-height:1.6
+    line-height:1.6;
 }
 
 @media(max-width:1050px){
-    .grid{grid-template-columns:1fr}
-    .side,.right{min-height:auto}
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .side,
+    .right{
+        min-height:auto;
+    }
 }
 
 @media(max-width:650px){
-    .hero h1{font-size:54px}
-    .suspects,.pieces{grid-template-columns:1fr 1fr}
-    .title{font-size:29px}
+    .hero h1{
+        font-size:54px;
+    }
+
+    .suspects,
+    .pieces{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .title{
+        font-size:29px;
+    }
+
+    .top{
+        flex-direction:column;
+        gap:12px;
+        align-items:flex-start;
+    }
+
+    .timer{
+        margin-left:5px;
+    }
 }
 </style>
 </head>
 
 <body>
+
 <div class="app" id="app"></div>
 
 <script>
+
 /* =========================================================
    CASE DATA
 ========================================================= */
@@ -483,6 +567,7 @@ const C = [
         "Recording has a confirmed 4:13–4:19 PM gap.",
         "Could be protecting the company."
     ],
+
     [
         "Maya Kapoor",
         "Head of Marketing",
@@ -491,6 +576,7 @@ const C = [
         "Laptop remained connected to the conference-room display.",
         "Could gain strategic advantage."
     ],
+
     [
         "Ryan Carter",
         "Technology Lead",
@@ -499,6 +585,7 @@ const C = [
         "Access card was used near the security room at 4:14 PM.",
         "Understands security infrastructure."
     ],
+
     [
         "Sophie Bennett",
         "Finance Manager",
@@ -507,6 +594,7 @@ const C = [
         "Recently discovered an unusual transaction.",
         "May want to investigate privately."
     ],
+
     [
         "Daniel Ross",
         "Sales Director",
@@ -515,6 +603,7 @@ const C = [
         "Call records confirm the call ended at 4:09 PM.",
         "A confidential strategy could help a deal."
     ],
+
     [
         "Olivia Reed",
         "People & Culture Manager",
@@ -525,10 +614,6 @@ const C = [
     ]
 ];
 
-/*
- Evidence is deliberately written so every important answer
- can be derived from something shown to the player.
-*/
 const E = [
     [
         "Clock stopped at 4:17 PM.",
@@ -537,20 +622,24 @@ const E = [
         "Coffee was still warm, indicating recent presence.",
         "Torn document mentions a hidden transfer."
     ],
+
     [
         "Security log: system disabled from 4:17 PM to 4:24 PM.",
         "Security outage lasted exactly 7 minutes.",
         "The security log records 4 suspicious access attempts."
     ],
+
     [
         "Security code decoded: 6747.",
         "Hidden CCTV frame: figure enters conference room at 4:18 PM."
     ],
+
     [
         "Transfer authorization names Victor Sterling and Olivia Reed.",
         "Meeting scheduled for 4:30 PM.",
         "Document is marked INTERNAL ONLY."
     ],
+
     [
         "Daniel's call ended at 4:09 PM.",
         "Alex's recording gap is 4:13–4:19 PM.",
@@ -558,6 +647,7 @@ const E = [
         "Olivia's employee meeting ended when the attendee left at 4:11 PM.",
         "No second attendee was recorded for Olivia's 4:00–4:30 meeting."
     ],
+
     [
         "Olivia sought evidence that would protect her from Victor's actions.",
         "Method: disable security → enter → take document → confrontation → leave.",
@@ -574,9 +664,6 @@ const names = [
     "THE FINAL ACCUSATION"
 ];
 
-/*
- Level 4 is intentionally ordered as a logical document.
-*/
 const P = [
     "TRANSFER",
     "APPROVED",
@@ -596,42 +683,50 @@ const P = [
 
 let S = {
     screen:"open",
+
     team:"",
+
     level:0,
+
     score:0,
 
     totalSeconds:1800,
+
     remain:1800,
 
-    /*
-      Instead of calculating directly from Date.now() while paused,
-      we maintain elapsed active time.
-    */
     lastTick:0,
+
     activeElapsed:0,
+
     paused:false,
 
     hints:3,
 
     evidence:[],
+
     found:[],
 
     sel:"",
+
     wrong:0,
 
     q1:"",
+
     q2:"",
+
     q3:"",
 
     pieces:[],
+
     feedback:""
 };
 
 /* =========================================================
-   UTILITY FUNCTIONS
+   UTILITIES
 ========================================================= */
 
 function esc(x){
+
     return String(x).replace(/[&<>]/g,a=>({
         "&":"&amp;",
         "<":"&lt;",
@@ -640,28 +735,38 @@ function esc(x){
 }
 
 function addEvidence(items){
+
     items.forEach(item=>{
+
         if(!S.evidence.includes(item)){
             S.evidence.push(item);
         }
+
     });
 }
 
 /* =========================================================
-   OPEN / SETUP
+   OPEN SCREEN
 ========================================================= */
 
 function open(){
+
     document.getElementById("app").innerHTML = `
+
     <div class="hero">
-        <div class="brand">GERMANE MEDIA LLC PRESENTS</div>
+
+        <div class="brand">
+            GERMANE MEDIA LLC PRESENTS
+        </div>
 
         <h1>
             THE BLACKBOX<br>
             INCIDENT
         </h1>
 
-        <h2>CORPORATE CRIME MYSTERY</h2>
+        <h2>
+            CORPORATE CRIME MYSTERY
+        </h2>
 
         <p>
             Six suspects. One missing project file.
@@ -673,16 +778,29 @@ function open(){
             reconstruct the document and identify the culprit.
         </p>
 
-        <button class="cta" onclick="setup()">
+        <button
+            class="cta"
+            onclick="showSetup()"
+        >
             START INVESTIGATION
         </button>
+
     </div>`;
 }
 
-function setup(){
+/* =========================================================
+   SETUP
+========================================================= */
+
+function showSetup(){
+
     document.getElementById("app").innerHTML = `
+
     <div class="hero">
-        <div class="brand">CASE FILE // INITIALIZE</div>
+
+        <div class="brand">
+            CASE FILE // INITIALIZE
+        </div>
 
         <h2 style="font-size:30px;letter-spacing:1px">
             ENTER YOUR TEAM
@@ -690,12 +808,15 @@ function setup(){
 
         <div class="setup">
 
-            <label>TEAM NAME</label>
+            <label>
+                TEAM NAME
+            </label>
 
             <input
                 id="team"
                 placeholder="e.g. Team Sherlock"
                 maxlength="28"
+                autocomplete="off"
             >
 
             <p style="font-size:12px;color:#777">
@@ -703,27 +824,117 @@ function setup(){
                 One person controls the shared screen.
             </p>
 
-            <button class="cta" onclick="start()">
+            <button
+                class="cta"
+                onclick="beginCase()"
+            >
                 BEGIN CASE
             </button>
+
         </div>
+
     </div>`;
 }
 
-function start(){
-    const input = document.getElementById("team");
+/* =========================================================
+   START GAME
+========================================================= */
 
-    S.team = input && input.value.trim()
-        ? input.value.trim()
-        : "Team Sherlock";
+function beginCase(){
 
-    S.lastTick = Date.now();
-    S.activeElapsed = 0;
-    S.remain = S.totalSeconds;
-    S.screen = "game";
+    try{
 
-    render();
-    clock();
+        const input =
+            document.getElementById("team");
+
+        if(
+            input &&
+            input.value &&
+            input.value.trim()
+        ){
+
+            S.team =
+                input.value.trim();
+
+        }else{
+
+            S.team =
+                "Team Sherlock";
+        }
+
+        S.screen = "game";
+
+        S.level = 0;
+
+        S.score = 0;
+
+        S.remain =
+            S.totalSeconds;
+
+        S.lastTick =
+            Date.now();
+
+        S.activeElapsed = 0;
+
+        S.paused = false;
+
+        S.hints = 3;
+
+        S.evidence = [];
+
+        S.found = [];
+
+        S.sel = "";
+
+        S.wrong = 0;
+
+        S.q1 = "";
+
+        S.q2 = "";
+
+        S.q3 = "";
+
+        S.pieces = [];
+
+        S.feedback = "";
+
+        render();
+
+        clock();
+
+    }catch(error){
+
+        console.error(
+            "GAME START ERROR:",
+            error
+        );
+
+        document.getElementById("app").innerHTML = `
+
+        <div class="hero">
+
+            <h2 style="color:#e05a5a">
+                GAME INITIALIZATION ERROR
+            </h2>
+
+            <p>
+                Something went wrong while starting
+                the investigation.
+            </p>
+
+            <div class="rule">
+                ${esc(error.message)}
+            </div>
+
+            <button
+                class="cta"
+                onclick="showSetup()"
+            >
+                RETURN TO SETUP
+            </button>
+
+        </div>`;
+    }
 }
 
 /* =========================================================
@@ -736,76 +947,103 @@ function clock(){
         return;
     }
 
-    const now = Date.now();
+    const now =
+        Date.now();
 
     if(!S.paused){
 
-        const delta = Math.floor((now - S.lastTick) / 1000);
+        const delta =
+            Math.floor(
+                (now - S.lastTick) / 1000
+            );
 
         if(delta > 0){
-            S.activeElapsed += delta;
-            S.lastTick = now;
+
+            S.activeElapsed +=
+                delta;
+
+            S.lastTick =
+                now;
         }
 
-        S.remain = Math.max(
-            0,
-            S.totalSeconds - S.activeElapsed
-        );
+        S.remain =
+            Math.max(
+                0,
+                S.totalSeconds -
+                S.activeElapsed
+            );
+
     }else{
+
         /*
-          While paused we continuously reset lastTick.
-          Therefore paused time is never added.
+          While paused, the current time is continually
+          reset so paused duration is never counted.
         */
-        S.lastTick = now;
+
+        S.lastTick =
+            now;
     }
 
-    if(S.remain === 0){
+    if(S.remain <= 0){
+
+        S.remain = 0;
 
         S.level = 5;
+
         S.feedback =
             "TIME'S UP — make your final accusation.";
 
         render();
+
         return;
     }
 
     updateTimer();
 
-    setTimeout(clock,1000);
+    setTimeout(
+        clock,
+        1000
+    );
 }
 
 function togglePause(){
 
     if(S.paused){
 
-        /*
-          Resume:
-          start counting from the current moment.
-        */
-        S.lastTick = Date.now();
-        S.paused = false;
+        S.lastTick =
+            Date.now();
+
+        S.paused =
+            false;
 
     }else{
 
-        /*
-          Before pausing, capture all active time up to now.
-        */
-        const now = Date.now();
-        const delta = Math.floor(
-            (now - S.lastTick) / 1000
-        );
+        const now =
+            Date.now();
+
+        const delta =
+            Math.floor(
+                (now - S.lastTick) / 1000
+            );
 
         if(delta > 0){
-            S.activeElapsed += delta;
+
+            S.activeElapsed +=
+                delta;
         }
 
-        S.remain = Math.max(
-            0,
-            S.totalSeconds - S.activeElapsed
-        );
+        S.remain =
+            Math.max(
+                0,
+                S.totalSeconds -
+                S.activeElapsed
+            );
 
-        S.lastTick = now;
-        S.paused = true;
+        S.lastTick =
+            now;
+
+        S.paused =
+            true;
     }
 
     render();
@@ -813,12 +1051,20 @@ function togglePause(){
 
 function updateTimer(){
 
-    const e = document.getElementById("timer");
+    const e =
+        document.getElementById("timer");
 
-    if(!e) return;
+    if(!e){
+        return;
+    }
 
-    let m = Math.floor(S.remain / 60);
-    let s = S.remain % 60;
+    const m =
+        Math.floor(
+            S.remain / 60
+        );
+
+    const s =
+        S.remain % 60;
 
     e.textContent =
         String(m).padStart(2,"0") +
@@ -827,7 +1073,11 @@ function updateTimer(){
 
     e.className =
         "timer " +
-        (S.remain < 600 ? "urgent" : "");
+        (
+            S.remain < 600
+            ? "urgent"
+            : ""
+        );
 }
 
 /* =========================================================
@@ -837,33 +1087,47 @@ function updateTimer(){
 function shell(){
 
     return `
+
     <div class="top">
 
         <div>
+
             <div class="brand">
                 GERMANE MEDIA LLC PRESENTS
             </div>
 
             <div style="font-size:12px;color:#777">
-                ${esc(S.team)} // INVESTIGATION
+                ${esc(S.team)}
+                // INVESTIGATION
             </div>
+
         </div>
 
         <div>
 
-            <button class="tiny" onclick="togglePause()">
+            <button
+                class="tiny"
+                onclick="togglePause()"
+            >
                 ${S.paused ? "RESUME" : "PAUSE"}
             </button>
 
-            <button class="tiny" onclick="evidence()">
+            <button
+                class="tiny"
+                onclick="showEvidence()"
+            >
                 EVIDENCE
             </button>
 
-            <span id="timer" class="timer">
+            <span
+                id="timer"
+                class="timer"
+            >
                 30:00
             </span>
 
         </div>
+
     </div>
 
     <div class="grid">
@@ -876,21 +1140,35 @@ function shell(){
 
             <div class="levels">
 
-                ${names.map((n,i)=>`
+                ${
+                    names.map(
+                        (n,i)=>`
 
-                    <button
-                        class="lvl
-                        ${i===S.level ? "active" : ""}
-                        ${i<S.level ? "done" : ""}"
-                        ${i<S.level
-                            ? `onclick="S.level=${i};S.feedback='';S.sel='';render()"`
-                            : "disabled"}
-                    >
-                        ${String(i+1).padStart(2,"0")}
-                        — ${n}
-                    </button>
-
-                `).join("")}
+                        <button
+                            class="
+                                lvl
+                                ${i===S.level ? "active" : ""}
+                                ${i<S.level ? "done" : ""}
+                            "
+                            ${
+                                i<S.level
+                                ?
+                                `onclick="
+                                    S.level=${i};
+                                    S.feedback='';
+                                    S.sel='';
+                                    render();
+                                "`
+                                :
+                                "disabled"
+                            }
+                        >
+                            ${String(i+1).padStart(2,"0")}
+                            — ${n}
+                        </button>
+                    `
+                    ).join("")
+                }
 
             </div>
 
@@ -907,7 +1185,7 @@ function shell(){
             <button
                 class="tiny"
                 style="width:100%"
-                onclick="chars()"
+                onclick="showCharacters()"
             >
                 CHARACTERS
             </button>
@@ -927,13 +1205,24 @@ function shell(){
             ${
                 S.evidence.length
                 ?
-                S.evidence.map(x=>`
-                    <div class="ev">
-                        ${esc(x)}
-                    </div>
-                `).join("")
+                S.evidence.map(
+                    x=>`
+                        <div class="ev">
+                            ${esc(x)}
+                        </div>
+                    `
+                ).join("")
                 :
-                "<p style='color:#555;font-size:11px'>No evidence collected yet.</p>"
+                `
+                <p
+                    style="
+                        color:#555;
+                        font-size:11px
+                    "
+                >
+                    No evidence collected yet.
+                </p>
+                `
             }
 
             <div
@@ -943,13 +1232,18 @@ function shell(){
                 HINTS
             </div>
 
-            <p style="font-size:11px;color:#888">
+            <p
+                style="
+                    font-size:11px;
+                    color:#888
+                "
+            >
                 3 total • 50 points each
             </p>
 
             <button
                 class="tiny"
-                onclick="hint()"
+                onclick="useHint()"
                 ${S.hints===0 ? "disabled" : ""}
             >
                 USE HINT (${S.hints})
@@ -967,6 +1261,7 @@ function shell(){
 function head(n,t,b){
 
     return `
+
     <div class="head">
 
         <div>
@@ -981,7 +1276,12 @@ function head(n,t,b){
 
         </div>
 
-        <div style="font-size:10px;color:#666">
+        <div
+            style="
+                font-size:10px;
+                color:#666
+            "
+        >
             30 MIN INVESTIGATION
         </div>
 
@@ -998,30 +1298,65 @@ function head(n,t,b){
 
 function level(){
 
-    if(S.level===0) return l1();
-    if(S.level===1) return l2();
-    if(S.level===2) return l3();
-    if(S.level===3) return l4();
-    if(S.level===4) return l5();
+    if(S.level === 0){
+        return level1();
+    }
 
-    return l6();
+    if(S.level === 1){
+        return level2();
+    }
+
+    if(S.level === 2){
+        return level3();
+    }
+
+    if(S.level === 3){
+        return level4();
+    }
+
+    if(S.level === 4){
+        return level5();
+    }
+
+    return level6();
 }
 
 /* =========================================================
    LEVEL 1
 ========================================================= */
 
-function l1(){
+function level1(){
 
-    let o = [
-        ["DIGITAL CLOCK","4:17 PM"],
-        ["ACCESS CARD","Registered near security room at 4:14 PM."],
-        ["LAPTOP","Display connection logged shortly before incident."],
-        ["COFFEE MUG","Still warm."],
-        ["TORN DOCUMENT","“If they discover the transfer, everything is over.”"]
+    const objects = [
+
+        [
+            "DIGITAL CLOCK",
+            "4:17 PM"
+        ],
+
+        [
+            "ACCESS CARD",
+            "Registered near security room at 4:14 PM."
+        ],
+
+        [
+            "LAPTOP",
+            "Display connection logged shortly before incident."
+        ],
+
+        [
+            "COFFEE MUG",
+            "Still warm."
+        ],
+
+        [
+            "TORN DOCUMENT",
+            "If they discover the transfer, everything is over."
+        ]
     ];
 
     return `
+
     <div class="panel">
 
         ${head(
@@ -1034,30 +1369,42 @@ function l1(){
 
             <div class="desk"></div>
 
-            ${o.map((x,i)=>`
+            ${
+                objects.map(
+                    (x,i)=>`
 
-                <button
-                    class="obj o${i+1}"
-                    onclick="inspect(${i})"
-                >
-                    ${x[0]}
-                </button>
+                    <button
+                        class="obj o${i+1}"
+                        onclick="inspectObject(${i})"
+                    >
+                        ${x[0]}
+                    </button>
 
-            `).join("")}
+                    `
+                ).join("")
+            }
 
         </div>
 
         <p>
+
             ${
-                S.found.map(i=>`
+                S.found.map(
+                    i=>`
+
                     <span
                         class="ev"
-                        style="display:inline-block"
+                        style="
+                            display:inline-block
+                        "
                     >
-                        ✓ ${o[i][0]}
+                        ✓ ${objects[i][0]}
                     </span>
-                `).join("")
+
+                    `
+                ).join("")
             }
+
         </p>
 
         ${
@@ -1077,24 +1424,41 @@ function l1(){
             <div class="answers">
 
                 ${
-                    ["4:09 PM","4:14 PM","4:17 PM","4:24 PM"]
-                    .map(x=>`
+                    [
+                        "4:09 PM",
+                        "4:14 PM",
+                        "4:17 PM",
+                        "4:24 PM"
+                    ].map(
+                        x=>`
 
                         <button
-                            class="ans ${S.sel===x ? "sel" : ""}"
-                            onclick="S.sel='${x}';render()"
+                            class="
+                                ans
+                                ${S.sel===x ? "sel" : ""}
+                            "
+                            onclick="
+                                S.sel='${x}';
+                                render();
+                            "
                         >
                             ${x}
                         </button>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
 
             <button
                 class="cta"
-                onclick="answer(0,S.sel==='4:17 PM')"
+                onclick="
+                    answerLevel(
+                        0,
+                        S.sel==='4:17 PM'
+                    )
+                "
             >
                 SUBMIT DEDUCTION
             </button>
@@ -1104,11 +1468,15 @@ function l1(){
     </div>`;
 }
 
-function inspect(i){
+function inspectObject(i){
 
     if(!S.found.includes(i)){
+
         S.found.push(i);
-        addEvidence([E[0][i]]);
+
+        addEvidence([
+            E[0][i]
+        ]);
     }
 
     S.feedback = [
@@ -1126,9 +1494,10 @@ function inspect(i){
    LEVEL 2
 ========================================================= */
 
-function l2(){
+function level2(){
 
     return `
+
     <div class="panel">
 
         ${head(
@@ -1140,6 +1509,7 @@ function l2(){
         <div class="riddle">
 
             I leave a record without making a sound.<br>
+
             I show the path you took without following you.<br><br>
 
             Investigators find me on the ground
@@ -1159,23 +1529,36 @@ function l2(){
                         "A footprint",
                         "A calendar",
                         "A password"
-                    ].map(x=>`
+                    ].map(
+                        x=>`
 
                         <button
-                            class="ans ${S.sel===x ? "sel" : ""}"
-                            onclick="S.sel='${x}';render()"
+                            class="
+                                ans
+                                ${S.sel===x ? "sel" : ""}
+                            "
+                            onclick="
+                                S.sel='${x}';
+                                render();
+                            "
                         >
                             ${x}
                         </button>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
 
             <button
                 class="cta"
-                onclick="answer(1,S.sel==='A footprint')"
+                onclick="
+                    answerLevel(
+                        1,
+                        S.sel==='A footprint'
+                    )
+                "
             >
                 UNLOCK FILE
             </button>
@@ -1197,9 +1580,10 @@ function l2(){
    LEVEL 3
 ========================================================= */
 
-function l3(){
+function level3(){
 
     return `
+
     <div class="panel">
 
         ${head(
@@ -1212,13 +1596,21 @@ function l3(){
 
             SECURITY KEYPAD<br><br>
 
-            FIRST DIGIT = people inside the investigation area<br>
-            SECOND DIGIT = minutes security was disabled<br>
-            THIRD DIGIT = suspicious access attempts<br>
-            FOURTH DIGIT = stopped clock minute display<br><br>
+            FIRST DIGIT
+            = people inside the investigation area<br>
+
+            SECOND DIGIT
+            = minutes security was disabled<br>
+
+            THIRD DIGIT
+            = suspicious access attempts<br>
+
+            FOURTH DIGIT
+            = stopped clock minute display<br><br>
 
             SECURITY LOG<br>
             ----------------------------<br>
+
             People inside: 6<br>
             Security disabled: 7 minutes<br>
             Suspicious access attempts: 4<br>
@@ -1227,26 +1619,41 @@ function l3(){
         </div>
 
         <div class="rule">
-            The four numbers are already present in the evidence.
-            Read them in the order shown above.
+
+            The four digits are:
+
+            <b>6 → 7 → 4 → 7</b>
+
+            Therefore the security code is
+            <b>6747</b>.
+
         </div>
 
         <input
-            id="code"
+            id="securityCode"
             class="code"
             maxlength="4"
             inputmode="numeric"
             placeholder="____"
+            autocomplete="off"
         >
 
         <button
             class="cta"
-            style="display:block;margin:auto"
+            style="
+                display:block;
+                margin:auto
+            "
             onclick="
-                answer(
+                const code =
+                    document.getElementById(
+                        'securityCode'
+                    ).value;
+
+                answerLevel(
                     2,
-                    document.getElementById('code').value==='6747'
-                )
+                    code === '6747'
+                );
             "
         >
             VERIFY CODE
@@ -1267,9 +1674,10 @@ function l3(){
    LEVEL 4
 ========================================================= */
 
-function l4(){
+function level4(){
 
     return `
+
     <div class="panel">
 
         ${head(
@@ -1279,29 +1687,41 @@ function l4(){
         )}
 
         <div class="rule">
-            <b>Document clues:</b><br>
-            1. The document begins with its subject.<br>
-            2. An approval follows the subject.<br>
-            3. Authorization comes next.<br>
-            4. The authorization is required from a named person.<br>
-            5. The project is then identified.<br>
-            6. The recipient follows the project name.<br>
-            7. The meeting details appear at the end.
+
+            <b>Document clues:</b><br><br>
+
+            1. Start with the subject.<br>
+            2. The approval status follows the subject.<br>
+            3. Then identify the authorization requirement.<br>
+            4. Name the person whose authorization is required.<br>
+            5. Identify the project.<br>
+            6. Identify the recipient/person connected to it.<br>
+            7. Finish with the meeting details and document classification.
+
         </div>
 
         <div class="pieces">
 
             ${
-                P.map((x,i)=>`
+                P.map(
+                    (x,i)=>`
 
                     <button
-                        class="piece ${S.pieces.includes(i) ? "sel" : ""}"
-                        onclick="piece(${i})"
+                        class="
+                            piece
+                            ${S.pieces.includes(i)
+                                ? "sel"
+                                : ""}
+                        "
+                        onclick="
+                            selectPiece(${i})
+                        "
                     >
                         ${i+1}. ${x}
                     </button>
 
-                `).join("")
+                    `
+                ).join("")
             }
 
         </div>
@@ -1309,8 +1729,12 @@ function l4(){
         <div class="assembled">
 
             ${
-                S.pieces.map(i=>P[i]).join(" ")
-                ||
+                S.pieces.length
+                ?
+                S.pieces
+                    .map(i=>P[i])
+                    .join(" ")
+                :
                 "Selected fragments will appear here in sequence."
             }
 
@@ -1319,10 +1743,12 @@ function l4(){
         <button
             class="cta"
             onclick="
-                answer(
+                answerLevel(
                     3,
                     JSON.stringify(S.pieces) ===
-                    JSON.stringify([0,1,2,3,4,5,6,7,8,9])
+                    JSON.stringify(
+                        [0,1,2,3,4,5,6,7,8,9]
+                    )
                 )
             "
         >
@@ -1340,13 +1766,20 @@ function l4(){
     </div>`;
 }
 
-function piece(i){
+function selectPiece(i){
 
-    let p = S.pieces.indexOf(i);
+    const index =
+        S.pieces.indexOf(i);
 
-    if(p >= 0){
-        S.pieces.splice(p,1);
+    if(index >= 0){
+
+        S.pieces.splice(
+            index,
+            1
+        );
+
     }else{
+
         S.pieces.push(i);
     }
 
@@ -1357,9 +1790,10 @@ function piece(i){
    LEVEL 5
 ========================================================= */
 
-function l5(){
+function level5(){
 
     return `
+
     <div class="panel">
 
         ${head(
@@ -1370,31 +1804,49 @@ function l5(){
 
         <div class="suspects">
 
-            ${C.map(c=>`
+            ${
+                C.map(
+                    c=>`
 
-                <div class="sus">
+                    <div class="sus">
 
-                    <div class="ava">
-                        ${c[2]}
+                        <div class="ava">
+                            ${c[2]}
+                        </div>
+
+                        <b>
+                            ${c[0]}
+                        </b>
+
+                        <small>
+                            ${c[1]}
+                        </small>
+
+                        <p
+                            style="
+                                font-size:11px;
+                                color:#aaa
+                            "
+                        >
+                            <b>Alibi:</b>
+                            ${c[3]}
+                        </p>
+
+                        <p
+                            style="
+                                font-size:11px;
+                                color:#c8ae77
+                            "
+                        >
+                            <b>Suspicious:</b>
+                            ${c[4]}
+                        </p>
+
                     </div>
 
-                    <b>${c[0]}</b>
-
-                    <small>
-                        ${c[1]}
-                    </small>
-
-                    <p style="font-size:11px;color:#aaa">
-                        <b>Alibi:</b> ${c[3]}
-                    </p>
-
-                    <p style="font-size:11px;color:#c8ae77">
-                        <b>Suspicious:</b> ${c[4]}
-                    </p>
-
-                </div>
-
-            `).join("")}
+                    `
+                ).join("")
+            }
 
         </div>
 
@@ -1402,13 +1854,21 @@ function l5(){
 
             <b>Timeline cross-check:</b><br><br>
 
-            • Alex's recording disappears from 4:13–4:19 PM.<br>
-            • Olivia's scheduled meeting loses its attendee at 4:11 PM.<br>
-            • No second attendee was recorded for Olivia's meeting.<br>
-            • Daniel's call ended at 4:09 PM, so his original claim is
-              shortened but not impossible.<br>
-            • Ryan's security-card use requires further investigation,
-              but his server log places him elsewhere.
+            • Alex's recording disappears from
+              <b>4:13–4:19 PM</b>.<br>
+
+            • Olivia's scheduled meeting attendee
+              leaves at <b>4:11 PM</b>.<br>
+
+            • No second attendee is recorded
+              for Olivia's meeting.<br>
+
+            • Daniel's call ended at
+              <b>4:09 PM</b>.<br>
+
+            • Ryan's card was used at 4:14 PM,
+              but his server activity places him
+              elsewhere.
 
         </div>
 
@@ -1426,23 +1886,36 @@ function l5(){
                         "Alex + Olivia",
                         "Ryan + Daniel",
                         "Sophie + Olivia"
-                    ].map(x=>`
+                    ].map(
+                        x=>`
 
                         <button
-                            class="ans ${S.sel===x ? "sel" : ""}"
-                            onclick="S.sel='${x}';render()"
+                            class="
+                                ans
+                                ${S.sel===x ? "sel" : ""}
+                            "
+                            onclick="
+                                S.sel='${x}';
+                                render();
+                            "
                         >
                             ${x}
                         </button>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
 
             <button
                 class="cta"
-                onclick="answer(4,S.sel==='Alex + Olivia')"
+                onclick="
+                    answerLevel(
+                        4,
+                        S.sel==='Alex + Olivia'
+                    )
+                "
             >
                 LOCK TIMELINE
             </button>
@@ -1464,9 +1937,10 @@ function l5(){
    LEVEL 6
 ========================================================= */
 
-function l6(){
+function level6(){
 
     return `
+
     <div class="panel">
 
         ${head(
@@ -1484,16 +1958,24 @@ function l6(){
             <div class="answers">
 
                 ${
-                    C.map(c=>`
+                    C.map(
+                        c=>`
 
                         <button
-                            class="ans ${S.q1===c[0] ? "sel" : ""}"
-                            onclick="S.q1='${c[0]}';render()"
+                            class="
+                                ans
+                                ${S.q1===c[0] ? "sel" : ""}
+                            "
+                            onclick="
+                                S.q1='${c[0]}';
+                                render();
+                            "
                         >
                             ${c[0]}
                         </button>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
@@ -1510,23 +1992,40 @@ function l6(){
 
                 ${
                     [
-                        ["A","Revenge"],
-                        ["B","Steal money"],
+                        [
+                            "A",
+                            "Revenge"
+                        ],
+                        [
+                            "B",
+                            "Steal money"
+                        ],
                         [
                             "C",
                             "Obtain evidence to protect herself from being blamed for Victor's actions"
                         ],
-                        ["D","Destroy the company"]
-                    ].map(x=>`
+                        [
+                            "D",
+                            "Destroy the company"
+                        ]
+                    ].map(
+                        x=>`
 
                         <button
-                            class="ans ${S.q2===x[0] ? "sel" : ""}"
-                            onclick="S.q2='${x[0]}';render()"
+                            class="
+                                ans
+                                ${S.q2===x[0] ? "sel" : ""}
+                            "
+                            onclick="
+                                S.q2='${x[0]}';
+                                render();
+                            "
                         >
                             ${x[0]}. ${x[1]}
                         </button>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
@@ -1555,16 +2054,24 @@ function l6(){
                             "C",
                             "Confront Victor → steal money → disable CCTV → leave"
                         ]
-                    ].map(x=>`
+                    ].map(
+                        x=>`
 
                         <button
-                            class="ans ${S.q3===x[0] ? "sel" : ""}"
-                            onclick="S.q3='${x[0]}';render()"
+                            class="
+                                ans
+                                ${S.q3===x[0] ? "sel" : ""}
+                            "
+                            onclick="
+                                S.q3='${x[0]}';
+                                render();
+                            "
                         >
                             ${x[0]}. ${x[1]}
                         </button>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
@@ -1573,7 +2080,7 @@ function l6(){
 
         <button
             class="cta"
-            onclick="final()"
+            onclick="submitFinal()"
         >
             SUBMIT FINAL ACCUSATION
         </button>
@@ -1590,71 +2097,80 @@ function l6(){
 }
 
 /* =========================================================
-   ANSWER HANDLING
+   ANSWER PROCESSING
 ========================================================= */
 
-function answer(l,ok){
+function answerLevel(l,correct){
 
-    const base = [100,150,200,200,250,300][l];
+    const base =
+        [100,150,200,200,250,300][l];
 
-    if(ok){
+    if(correct){
 
         S.score +=
             base +
-            (S.wrong===0 && l<5 ? 25 : 0);
+            (
+                S.wrong === 0 && l < 5
+                ? 25
+                : 0
+            );
 
         addEvidence(E[l]);
 
         S.feedback =
             "✓ CORRECT — evidence secured.";
 
-        setTimeout(()=>{
+        setTimeout(
+            ()=>{
+                S.level =
+                    Math.min(
+                        5,
+                        l + 1
+                    );
 
-            S.level = Math.min(5,l+1);
+                S.sel = "";
 
-            S.sel = "";
-            S.wrong = 0;
-            S.feedback = "";
+                S.wrong = 0;
 
-            render();
+                S.feedback = "";
 
-        },700);
+                render();
+            },
+            700
+        );
 
     }else{
 
         S.wrong++;
 
-        S.score = Math.max(
-            0,
-            S.score - (S.wrong===1 ? 25 : 50)
-        );
+        S.score =
+            Math.max(
+                0,
+                S.score -
+                (
+                    S.wrong === 1
+                    ? 25
+                    : 50
+                )
+            );
 
-        if(l===0){
+        const messages = [
 
-            S.feedback =
-                "✕ Incorrect. Compare the stopped clock with the other timestamps.";
+            "✕ Incorrect. Compare the stopped clock with the other timestamps.",
 
-        }else if(l===1){
+            "✕ Incorrect. The answer leaves a physical trail left on the ground.",
 
-            S.feedback =
-                "✕ Incorrect. The answer leaves a physical trail of where someone has been.";
+            "✕ Incorrect. Read the four security-log numbers in order.",
 
-        }else if(l===2){
+            "✕ Incorrect. Use the document clues to determine the sequence.",
 
-            S.feedback =
-                "✕ Incorrect. Read the four security-log numbers in order.";
+            "✕ Incorrect. Compare the exact alibi windows against the timeline."
 
-        }else if(l===3){
+        ];
 
-            S.feedback =
-                "✕ Incorrect. Use the document clues to determine the sequence.";
-
-        }else if(l===4){
-
-            S.feedback =
-                "✕ Incorrect. Compare the exact alibi windows against the timeline.";
-
-        }
+        S.feedback =
+            messages[l] ||
+            "✕ Incorrect. Review the evidence.";
 
         render();
     }
@@ -1664,7 +2180,7 @@ function answer(l,ok){
    FINAL ACCUSATION
 ========================================================= */
 
-function final(){
+function submitFinal(){
 
     if(
         S.q1 === "Olivia Reed" &&
@@ -1673,16 +2189,19 @@ function final(){
     ){
 
         S.score += 200;
-        S.screen = "reveal";
+
+        S.screen =
+            "reveal";
 
         render();
 
     }else{
 
-        S.score = Math.max(
-            0,
-            S.score - 50
-        );
+        S.score =
+            Math.max(
+                0,
+                S.score - 50
+            );
 
         S.feedback =
             "The accusation does not fit every clue. Revisit the evidence board.";
@@ -1699,16 +2218,25 @@ function reveal(){
 
     let rank =
         S.score >= 1200
-        ? "S-RANK — MASTER DETECTIVES"
-        : S.score >= 950
-        ? "A-RANK — ELITE INVESTIGATORS"
-        : S.score >= 700
-        ? "B-RANK — SOLID DETECTIVES"
-        : S.score >= 450
-        ? "C-RANK — ROOKIE DETECTIVES"
-        : "D-RANK — THE SUSPECTS WERE RIGHT";
+        ?
+        "S-RANK — MASTER DETECTIVES"
+        :
+        S.score >= 950
+        ?
+        "A-RANK — ELITE INVESTIGATORS"
+        :
+        S.score >= 700
+        ?
+        "B-RANK — SOLID DETECTIVES"
+        :
+        S.score >= 450
+        ?
+        "C-RANK — ROOKIE DETECTIVES"
+        :
+        "D-RANK — THE SUSPECTS WERE RIGHT";
 
     return `
+
     <div class="panel final">
 
         <div class="stamp">
@@ -1736,45 +2264,79 @@ function reveal(){
                 line-height:1.7
             "
         >
-            Olivia discovered that Victor Sterling had secretly
-            manipulated an internal project and planned to blame
-            her department if it failed.
+            Olivia discovered that Victor Sterling had
+            secretly manipulated an internal project and
+            planned to blame her department if it failed.
 
             She wanted the document proving what had happened.
 
-            She used the security outage as a window to enter the
-            conference room, took Project Blackbox and confronted
-            Victor.
+            She used the security outage as a window to enter
+            the conference room, took Project Blackbox and
+            confronted Victor.
 
             Victor became unconscious during the confrontation.
-            Olivia then left the conference area before security
-            was restored.
+
+            Olivia then left the conference area before
+            security was restored.
         </p>
 
         <div class="timeline">
 
             ${
                 [
-                    ["4:09 PM","Daniel's client call ends."],
-                    ["4:12 PM","Server access is recorded."],
-                    ["4:14 PM","Security room access is recorded."],
-                    ["4:17 PM","Security system is disabled."],
-                    ["4:18 PM","Olivia enters the conference room."],
-                    ["4:20 PM","Project Blackbox is removed."],
-                    ["4:22 PM","Victor confronts Olivia."],
-                    ["4:23 PM","Olivia leaves the conference area."],
-                    ["4:24 PM","Security system is restored."]
-                ].map(x=>`
+                    [
+                        "4:09 PM",
+                        "Daniel's client call ends."
+                    ],
+                    [
+                        "4:12 PM",
+                        "Server access is recorded."
+                    ],
+                    [
+                        "4:14 PM",
+                        "Security room access is recorded."
+                    ],
+                    [
+                        "4:17 PM",
+                        "Security system is disabled."
+                    ],
+                    [
+                        "4:18 PM",
+                        "Olivia enters the conference room."
+                    ],
+                    [
+                        "4:20 PM",
+                        "Project Blackbox is removed."
+                    ],
+                    [
+                        "4:22 PM",
+                        "Victor confronts Olivia."
+                    ],
+                    [
+                        "4:23 PM",
+                        "Olivia leaves the conference area."
+                    ],
+                    [
+                        "4:24 PM",
+                        "Security system is restored."
+                    ]
+                ].map(
+                    x=>`
 
                     <div class="time">
 
-                        <b>${x[0]}</b>
+                        <b>
+                            ${x[0]}
+                        </b>
 
-                        <span>${x[1]}</span>
+                        <span>
+                            ${x[1]}
+                        </span>
 
                     </div>
 
-                `).join("")
+                    `
+                ).join("")
             }
 
         </div>
@@ -1783,7 +2345,9 @@ function reveal(){
             FINAL SCORE: ${S.score}
         </h2>
 
-        <div style="letter-spacing:3px">
+        <div
+            style="letter-spacing:3px"
+        >
             ${rank}
         </div>
 
@@ -1801,18 +2365,28 @@ function reveal(){
    EVIDENCE MODAL
 ========================================================= */
 
-function evidence(){
+function showEvidence(){
 
     document.body.insertAdjacentHTML(
         "beforeend",
         `
-        <div class="modal" id="modal">
+
+        <div
+            class="modal"
+            id="evidenceModal"
+        >
 
             <div class="modalbox">
 
                 <button
                     class="close"
-                    onclick="document.getElementById('modal').remove()"
+                    onclick="
+                        document
+                        .getElementById(
+                            'evidenceModal'
+                        )
+                        .remove()
+                    "
                 >
                     ×
                 </button>
@@ -1826,16 +2400,22 @@ function evidence(){
                 </h2>
 
                 ${
-                    S.evidence.map((e,i)=>`
+                    S.evidence.length
+                    ?
+                    S.evidence.map(
+                        (e,i)=>`
 
                         <div class="ev">
+
                             EVIDENCE
                             ${String(i+1).padStart(2,"0")}
                             — ${esc(e)}
+
                         </div>
 
-                    `).join("")
-                    ||
+                        `
+                    ).join("")
+                    :
                     "<p>No evidence yet.</p>"
                 }
 
@@ -1850,18 +2430,28 @@ function evidence(){
    CHARACTER MODAL
 ========================================================= */
 
-function chars(){
+function showCharacters(){
 
     document.body.insertAdjacentHTML(
         "beforeend",
         `
-        <div class="modal" id="modal">
+
+        <div
+            class="modal"
+            id="charactersModal"
+        >
 
             <div class="modalbox">
 
                 <button
                     class="close"
-                    onclick="document.getElementById('modal').remove()"
+                    onclick="
+                        document
+                        .getElementById(
+                            'charactersModal'
+                        )
+                        .remove()
+                    "
                 >
                     ×
                 </button>
@@ -1871,12 +2461,14 @@ function chars(){
                 </div>
 
                 ${
-                    C.map(c=>`
+                    C.map(
+                        c=>`
 
                         <div
                             style="
                                 padding:13px 0;
-                                border-bottom:1px solid #292621
+                                border-bottom:
+                                1px solid #292621
                             "
                         >
 
@@ -1884,9 +2476,13 @@ function chars(){
                                 ${c[2]}
                             </div>
 
-                            <b>${c[0]}</b>
+                            <b>
+                                ${c[0]}
+                            </b>
 
-                            <small style="color:#777">
+                            <small
+                                style="color:#777"
+                            >
                                 ${c[1]}
                             </small>
 
@@ -1896,6 +2492,7 @@ function chars(){
                                     color:#aaa
                                 "
                             >
+
                                 <b>Alibi:</b>
                                 ${c[3]}<br><br>
 
@@ -1904,11 +2501,13 @@ function chars(){
 
                                 <b>Possible motive:</b>
                                 ${c[5]}
+
                             </p>
 
                         </div>
 
-                    `).join("")
+                        `
+                    ).join("")
                 }
 
             </div>
@@ -1919,10 +2518,10 @@ function chars(){
 }
 
 /* =========================================================
-   LEVEL-SPECIFIC HINTS
+   HINT SYSTEM
 ========================================================= */
 
-function hint(){
+function useHint(){
 
     if(S.hints <= 0){
         return;
@@ -1930,44 +2529,89 @@ function hint(){
 
     S.hints--;
 
-    S.score = Math.max(
-        0,
-        S.score - 50
-    );
+    S.score =
+        Math.max(
+            0,
+            S.score - 50
+        );
 
     const hints = [
 
-        "The stopped clock is your strongest direct timestamp. Inspect the digital clock first.",
+        "The strongest direct timestamp is the stopped clock. Inspect the digital clock.",
 
-        "The riddle describes a physical trace left on the ground by a person.",
+        "The riddle describes a physical trace left on the ground after someone passes.",
 
-        "The code is not a guess. The security log explicitly provides 6, 7, 4 and 17 → use the minute display as 7.",
+        "The security log gives 6, 7, 4 and the minute display 7. The code is 6747.",
 
-        "The document starts with its subject and ends with its meeting details. Follow the document clues.",
+        "The document starts with its subject and ends with meeting details. Follow the document clues.",
 
-        "Alex has a 6-minute recording gap. Olivia's meeting attendee left at 4:11 PM and no replacement attendee was recorded.",
+        "Alex has a 4:13–4:19 recording gap. Olivia's meeting attendee left at 4:11 and no replacement attendee was recorded.",
 
-        "The evidence points to Olivia: motive, opportunity, the document, the security window and the final confrontation."
+        "Olivia has the motive, opportunity, document connection and the timeline opportunity."
     ];
 
-    S.feedback = hints[S.level] || hints[0];
+    S.feedback =
+        hints[S.level] ||
+        hints[0];
 
     render();
 }
 
 /* =========================================================
-   INITIALIZE
+   RENDER
+========================================================= */
+
+function render(){
+
+    const app =
+        document.getElementById("app");
+
+    if(!app){
+        return;
+    }
+
+    if(S.screen === "open"){
+
+        open();
+
+        return;
+    }
+
+    if(S.screen === "setup"){
+
+        showSetup();
+
+        return;
+    }
+
+    if(S.screen === "reveal"){
+
+        app.innerHTML =
+            reveal();
+
+        return;
+    }
+
+    app.innerHTML =
+        shell();
+
+    updateTimer();
+}
+
+/* =========================================================
+   START
 ========================================================= */
 
 open();
 
 </script>
+
 </body>
 </html>
-'''
+"""
 
 components.html(
     HTML,
     height=2200,
-    scrolling=False
+    scrolling=False,
 )

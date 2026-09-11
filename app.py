@@ -459,7 +459,7 @@ HTML_GAME = """
             <label style="font-size:12px; font-weight:700;">ENTER TEAM NAME:</label><br>
             <input type="text" id="team-input" value="THE JUGAADUS" style="padding:10px; border-radius:8px; border:2px solid #ffd700; background:#110d29; color:#fff; font-weight:700; text-align:center; font-size:16px;">
         </div>
-        <button class="btn-main" id="start-game-btn" type="button">START THE CHAOS 🚀</button>
+        <button class="btn-main" id="start-game-btn" type="button" data-action="start-game">START THE CHAOS 🚀</button>
     </div>
 
     <!-- LEVEL TRACKER -->
@@ -688,7 +688,7 @@ HTML_GAME = """
                 <label style="font-size:12px; font-weight:700;">ENTER TEAM NAME:</label><br>
                 <input type="text" id="team-input" value="THE JUGAADUS" style="padding:10px; border-radius:8px; border:2px solid #ffd700; background:#110d29; color:#fff; font-weight:700; text-align:center; font-size:16px;">
             </div>
-            <button class="btn-main" id="start-game-btn" type="button">START THE CHAOS 🚀</button>
+            <button class="btn-main" id="start-game-btn" type="button" data-action="start-game">START THE CHAOS 🚀</button>
         `;
 
         // HUD is updated after the stage is rendered.
@@ -698,54 +698,31 @@ HTML_GAME = """
         document.getElementById('alert-zone').innerHTML = '';
         updateHUD();
 
-        // Bind the Start button with one reliable click handler.
-        const startBtn = document.getElementById('start-game-btn');
-        if (startBtn) {
-            startBtn.onclick = function(event) {
-                event.preventDefault();
-                startGame();
-            };
-        }
+        // Start button uses inline onclick so it works reliably inside Streamlit iframe.
+        window.startGame = startGame;
     }
 
     function startGame() {
-        // FIRST ACTION: change the screen. This guarantees the user sees that
-        // the click was received even if a browser feature fails afterwards.
         const stage = document.getElementById('stage');
-        if (!stage) return;
+        if (!stage) { alert('Game stage not found'); return; }
 
         const inputEl = document.getElementById('team-input');
-        const input = inputEl ? inputEl.value : '';
-        if (input && input.trim()) teamName = input.trim().toUpperCase();
+        if (inputEl && inputEl.value.trim()) teamName = inputEl.value.trim().toUpperCase();
 
-        const teamDisplay = document.getElementById('display-team');
-        if (teamDisplay) teamDisplay.innerText = `TEAM: ${teamName}`;
-
-        if (timerInterval) clearInterval(timerInterval);
-        startTimer();
-
-        // Render the transition screen DIRECTLY. Do not depend on audio or a
-        // second function to make the click appear to work.
+        // Change screen FIRST. Nothing else can block the click.
         stage.innerHTML = `
             <div class="char-modal" style="position:relative; z-index:20; opacity:1; visibility:visible;">
                 <div class="char-avatar">👨‍💼</div>
                 <div class="char-name">TARANG (The HR Boss)</div>
-                <div class="char-quote">"Welcome to Friday! 30 minutes on the clock. Survive all 10 challenges and don't embarrass HR!"</div>
-                <button class="btn-main" id="char-btn" type="button">CONTINUE 🚀</button>
-            </div>
-        `;
+                <div class="char-quote">Welcome to Friday! Survive all 10 challenges!</div>
+                <button class="btn-main" id="char-btn" type="button" data-action="continue-game">CONTINUE 🚀</button>
+            </div>`;
 
-        // Sound is optional. It is deliberately LAST.
-        playSound('cheer');
-
-        const continueBtn = document.getElementById('char-btn');
-        if (continueBtn) {
-            continueBtn.onclick = function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                loadLevel1();
-            };
-        }
+        const teamDisplay = document.getElementById('display-team');
+        if (teamDisplay) teamDisplay.innerText = `TEAM: ${teamName}`;
+        try { updateHUD(); } catch (e) { console.error(e); }
+        try { startTimer(); } catch (e) { console.error(e); }
+        try { playSound('cheer'); } catch (e) { console.error(e); }
     }
 
     // Make it explicitly available to inline/fallback handlers.
@@ -1295,6 +1272,21 @@ HTML_GAME = """
             </div>
         `;
     }
+
+    // ROBUST EVENT HANDLER FOR STREAMLIT IFRAME
+    // Use event delegation so dynamically-rendered buttons always work.
+    document.addEventListener("click", function(event) {
+        const button = event.target.closest("button[data-action]");
+        if (!button) return;
+        event.preventDefault();
+        event.stopPropagation();
+        const action = button.getAttribute("data-action");
+        if (action === "start-game") {
+            startGame();
+        } else if (action === "continue-game") {
+            loadLevel1();
+        }
+    }, false);
 
     // INITIALIZE ON LOAD
     if (document.readyState === 'loading') {

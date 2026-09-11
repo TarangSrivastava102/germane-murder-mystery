@@ -458,7 +458,7 @@ HTML_GAME = """
             <label style="font-size:12px; font-weight:700;">ENTER TEAM NAME:</label><br>
             <input type="text" id="team-input" value="THE JUGAADUS" style="padding:10px; border-radius:8px; border:2px solid #ffd700; background:#110d29; color:#fff; font-weight:700; text-align:center; font-size:16px;">
         </div>
-        <button class="btn-main" onclick="startGame()">START THE CHAOS 🚀</button>
+        <button class="btn-main" id="start-game-btn" type="button">START THE CHAOS 🚀</button>
     </div>
 
     <!-- LEVEL TRACKER -->
@@ -494,8 +494,12 @@ HTML_GAME = """
 
     function playSound(type) {
         if (!soundEnabled) return;
-        initAudio();
-        const now = audioCtx.currentTime;
+        try {
+            initAudio();
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume().catch(() => {});
+            }
+            const now = audioCtx.currentTime;
 
         if (type === 'ting') {
             let osc = audioCtx.createOscillator();
@@ -547,6 +551,10 @@ HTML_GAME = """
             gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
             osc.connect(gain); gain.connect(audioCtx.destination);
             osc.start(now); osc.stop(now + 0.25);
+        }
+        } catch (e) {
+            // Audio must never prevent the game buttons from working.
+            console.log('Audio unavailable:', e);
         }
     }
 
@@ -688,15 +696,30 @@ HTML_GAME = """
         document.getElementById('hint-btn').innerText = "💡 HINT (3)";
         document.getElementById('alert-zone').innerHTML = '';
         updateHUD();
+
+        const startBtn = document.getElementById('start-game-btn');
+        if (startBtn) {
+            startBtn.addEventListener('click', startGame);
+        }
     }
 
     function startGame() {
-        let input = document.getElementById('team-input').value;
+        const inputEl = document.getElementById('team-input');
+        const input = inputEl ? inputEl.value : '';
         if (input.trim()) teamName = input.trim().toUpperCase();
+
         document.getElementById('display-team').innerText = `TEAM: ${teamName}`;
         startTimer();
-        playSound('cheer');
-        showCharacterPopup('👨‍💼', 'TARANG (The HR Boss)', 'Welcome to Friday! 30 minutes on the clock. Survive all 10 challenges and don\'t embarrass HR!', loadLevel1);
+
+        // Start the game even if browser audio is unavailable.
+        try { playSound('cheer'); } catch (e) {}
+
+        showCharacterPopup(
+            '👨‍💼',
+            'TARANG (The HR Boss)',
+            'Welcome to Friday! 30 minutes on the clock. Survive all 10 challenges and don\'t embarrass HR!',
+            loadLevel1
+        );
     }
 
     // LEVEL 1: TRAFFIC SIMULATOR

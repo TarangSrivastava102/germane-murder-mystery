@@ -1,6 +1,4 @@
-from pathlib import Path
-
-app_code = r'''import streamlit as st
+import streamlit as st
 import streamlit.components.v1 as components
 
 st.set_page_config(
@@ -652,10 +650,3 @@ function confetti(){
 """
 
 components.html(GAME_HTML, height=1250, scrolling=True)
-'''
-
-path = Path("/mnt/data/app.py")
-path.write_text(app_code, encoding="utf-8")
-
-print(f"Created: {path}")
-print(f"Size: {path.stat().st_size:,} bytes")

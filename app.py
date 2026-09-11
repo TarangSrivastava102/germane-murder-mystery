@@ -266,8 +266,7 @@ function l5(){
  "4:17   SYS      Security control     DISABLE",
  "4:18   OR-119   Conference room      DOOR OPEN",
  "4:20   OR-119   Conference room      FILE ACCESS"
- ].join("
-");
+ ].join("\n");
  return `<div class="panel">${head(5,"ACCESS LOG","One identity appears when the missing file is accessed. Match that identity to a suspect.")}<div class="terminal">${logs}</div>
  <div class="note">CLUE: OR = first letter of the first name + first letter of the last name.</div>
  <div class="q"><h3>Who is OR?</h3><div class="answers">${SUSPECTS.map(s=>`<button class="ans ${S.sel===s.name?"sel":""}" onclick="S.sel='${s.name}';render()">${s.name}</button>`).join("")}</div>

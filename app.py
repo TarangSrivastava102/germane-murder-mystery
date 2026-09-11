@@ -339,14 +339,14 @@ DIGIT 3 = hour shown on the stopped clock
 DIGIT 4 = number of suspicious access attempts
 
 Use the case evidence — not guesswork.</div>
- <div class="note">You have already seen all four facts in earlier levels. Check the Evidence Board if you need to review them.</div>
+ <div class="note"><b>TEAM CHECK:</b> 6 suspects • 3-minute blackout • stopped clock shows 4 PM • 4 suspicious access attempts.<br><span style="color:#888">Enter those four digits in the order shown above.</span></div>
  <input id="vault" class="code" maxlength="4" inputmode="numeric" placeholder="____">
  ${S.feedback?`<div class="feedback ${S.feedback.startsWith("✓")?"good":"bad"}">${S.feedback}</div>`:""}
  <button class="cta" onclick="checkVault()">OPEN VAULT</button></div>`;
 }
 function checkVault(){
  const v=(document.getElementById("vault")?.value||"").trim();
- check(8,v==="6744","Calculate each digit: suspects • blackout minutes • clock hour • suspicious attempts.");
+ check(8,v==="6344","Calculate each digit: suspects • blackout minutes • clock hour • suspicious attempts.");
 }
 
 /* 10 — Final accusation */

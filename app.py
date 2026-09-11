@@ -698,23 +698,13 @@ HTML_GAME = """
         document.getElementById('alert-zone').innerHTML = '';
         updateHUD();
 
-        // Bind the Start button directly. Also keep a document-level fallback so
-        // Streamlit/iframe event handling cannot prevent the game from starting.
+        // Bind the Start button with one reliable click handler.
         const startBtn = document.getElementById('start-game-btn');
         if (startBtn) {
-            // Use BOTH click and pointerup. This is deliberately redundant for
-            // Streamlit's iframe/browser event handling.
-            startBtn.addEventListener('click', function(event) {
+            startBtn.onclick = function(event) {
                 event.preventDefault();
-                event.stopPropagation();
-                window.startGame();
-            }, false);
-            startBtn.addEventListener('pointerup', function(event) {
-                if (event.button !== 0) return;
-                event.preventDefault();
-                event.stopPropagation();
-                window.startGame();
-            }, false);
+                startGame();
+            };
         }
     }
 
@@ -1230,6 +1220,7 @@ HTML_GAME = """
     }
 
     function answerTarang(option) {
+        const stage = document.getElementById('stage');
         let fb = document.getElementById('tarang-feedback');
         if (option === 'A') {
             score += 500;
@@ -1304,15 +1295,6 @@ HTML_GAME = """
             </div>
         `;
     }
-
-    // Extra-safe click fallback for Streamlit iframe environments.
-    document.addEventListener('click', function(event) {
-        const btn = event.target.closest ? event.target.closest('#start-game-btn') : null;
-        if (btn) {
-            event.preventDefault();
-            window.startGame();
-        }
-    }, true);
 
     // INITIALIZE ON LOAD
     if (document.readyState === 'loading') {
